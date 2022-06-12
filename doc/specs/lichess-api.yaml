@@ -5,18 +5,16 @@ info:
   x-logo:
     url: https://assets.playstrategy.org/assets/_2402ey/logo/playstrategy.svg
     backgroundColor: #ffffff
-  description: "\n\n# Introduction\nWelcome to the reference for the Lichess API! Lichess is free/libre, open-source chess server powered by volunteers and donations.\n\n\
-  \ - Get help in the [lichess developers discord channel](https://discord.gg/pw6Efvk),\
-  \ or in the #lichess IRC channel on freenode.\n\
+  description: "\n\n# Introduction\nWelcome to the reference for the Play Strategy API! Play Strategy is free/libre, open-source chess server powered by volunteers and donations.\n\n\
   \ - [Contribute to this documentation on Github](https://github.com/Mind-Sports-Games/api).\n\
-  \ - Check out [lichess widgets to embed in your website](https://playstrategy.org/developers).\n\
+  \ - Check out [Play Strategy widgets to embed in your website](https://playstrategy.org/developers).\n\
   \n## Endpoint\n\
   \ All requests go to `https://playstrategy.org`.\n\
   \n## Clients\n\
   - [Python general API](https://github.com/rhgrant10/berserk)\n\
-  - [Python general API - async](https://pypi.org/project/async-lichess-sdk)\n\
-  - [Python Lichess Bot](https://github.com/careless25/lichess-bot)\n\
-  - [Python Board API for Certabo](https://github.com/haklein/certabo-lichess)\n\
+  - [Python general API - async](https://pypi.org/project/async-lichess-sdk) (note: some changes may be required)\n\
+  - [Python Play Strategy Bot](https://github.com/careless25/lichess-bot) (note: some changes may be required)\n\
+  - [Python Board API for Certabo](https://github.com/haklein/certabo-lichess) (note: some changes may be required)\n\
   \n## Rate limiting\n\
   \ All requests are rate limited using various strategies,\
   \ to ensure the API remains responsive for everyone.\n\
@@ -32,40 +30,39 @@ tags:
     https://playstrategy.org/account/preferences/game-display
 - name: Users
   description: |
-    Access registered users on Lichess.
+    Access registered users on Play Strategy.
     https://playstrategy.org/player
 - name: Relations
   description: |
     Access relations between users.
 - name: Games
   description: |
-    Access games played on Lichess.
+    Access games played on Play Strategy.
     https://playstrategy.org/games
 - name: Teams
   description: |
-    Access and manage Lichess teams and their members.
+    Access and manage Play Strategy teams and their members.
     https://playstrategy.org/team
 - name: Board
-  description: "Play on Lichess with physical boards and third-party clients.\n
-  \ Works with normal Lichess accounts. Engine play or assistance is forbidden.\n\n\
+  description: "Play on Play Strategy with physical boards and third-party clients.\n
+  \ Works with normal Play Strategy accounts. Engine play or assistance is forbidden.\n\n\
   \n### Features\n\
   \ - [Stream incoming chess moves](#operation/boardGameStream)\n\
   \ - [Play chess moves](#operation/boardGameMove)\n\
   \ - [Read](#operation/boardGameStream) and [write](#operation/boardGameChat) in the player and spectator chats\n\
   \ - [Receive](#operation/apiStreamEvent), [create](#operation/challengeCreate) and [accept](#operation/challengeAccept) (or [decline](#operation/challengeDecline)) challenges\n\
   \ - [Abort](#operation/boardGameAbort) and [resign](#operation/boardGameResign) games\n\
-  \ - Compatible with normal Lichess accounts\n\n
+  \ - Compatible with normal Play Strategy accounts\n\n
   \n### Restrictions\n\
   \ - Engine assistance is strictly forbidden\n\
   \ - Time controls: [Rapid, Classical and Correspondence](https://playstrategy.org/faq#time-controls) only\n\
   \n### Links\n\
-  \ - [Announcement](https://playstrategy.org/blog/XlRW5REAAB8AUJJ-/welcome-lichess-boards)\n\
+  \ - [Announcement](https://lichess.org/blog/XlRW5REAAB8AUJJ-/welcome-lichess-boards) (note: some changes from lichess may be required)\n\
   \ - [Certabo support](https://github.com/haklein/certabo-lichess)\n\
-  \ - [Lichs (play from command-line)](https://github.com/Cqsi/lichs)\n\
-  \ - [Lichess discord bot](https://top.gg/bot/707287095911120968)"
+  \ - [Lichs (play from command-line)](https://github.com/Cqsi/lichs)"
 - name: Bot
-  description: "Play on Lichess as a bot. Allows engine play.\n
-  \ Read the [blog post announcement of lichess bots](https://playstrategy.org/blog/WvDNticAAMu_mHKP/welcome-lichess-bots).\n\n
+  description: "Play on Play Strategy as a bot. Allows engine play.\n
+  \ Read the [blog post announcement of lichess bots](https://lichess.org/blog/WvDNticAAMu_mHKP/welcome-lichess-bots). (Note, some changes between Lichess and Play Strategy may be required)\n\n
   \ Only works with [Bot accounts](#operation/botAccountUpgrade).\n\n\
   \n### Features\n\
   \ - [Stream incoming chess moves](#operation/botGameStream)\n\
@@ -78,15 +75,13 @@ tags:
   \ - Bots can only play challenge games:  pools and tournaments are off-limits\n\
   \ - Bots cannot play UltraBullet (¼+0) because it requires making too many requests. But 0+1 and ½+0 are allowed.\n\
   \n### Integrations\n\
-  \ - [Python3 lichess-bot](https://github.com/careless25/lichess-bot) (official)\n\
-  \ - [JavaScript bot-o-tron](https://github.com/tailuge/bot-o-tron)\n\
-  \ - [Golang lichess-bot](https://github.com/dolegi/lichess-bot)\n\
+  \ - [Python3 lichess-bot](https://github.com/careless25/lichess-bot) (official) (Note: Some changes may be required)\n\
+  \ - [JavaScript bot-o-tron](https://github.com/tailuge/bot-o-tron) (Note: Some changes may be required)\n\
+  \ - [Golang lichess-bot](https://github.com/dolegi/lichess-bot) (Note: Some changes may be required)\n\
   \ - Yours? Please make [an issue or pull request](https://github.com/Mind-Sports-Games/api).\n\
   \n### Links\n\
-  \ - [Announcement](https://playstrategy.org/blog/WvDNticAAMu_mHKP/welcome-lichess-bots)\n\
-  \ - Join the [Lichess Bots team](https://playstrategy.org/team/lichess-bots) with your bot account\n\
-  \ - [Get help in the discord channel](https://discord.gg/quwueFd)\n\
-  \ - Watch [Lichess Bot TV](https://playstrategy.org/tv/bot)"
+  \ - [Announcement](https://lichess.org/blog/WvDNticAAMu_mHKP/welcome-lichess-bots)\n\
+  \ - Watch [Play Strategy Bot TV](https://playstrategy.org/tv/bot)"
 - name: Challenges
   description: |
     Send and receive challenges to play.
@@ -99,20 +94,20 @@ tags:
     These endpoints are intended for tournament organisers.
 - name: Arena tournaments
   description: |
-    Access Arena tournaments played on Lichess.
-    [Official Arena tournaments](https://playstrategy.org/tournament) are maintained by Lichess,
+    Access Arena tournaments played on Play Strategy.
+    [Official Arena tournaments](https://playstrategy.org/tournament) are maintained by Play Strategy,
     but you can [create your own Arena tournaments](https://playstrategy.org/tournament/new) as well.
 - name: Swiss tournaments
   description: |
-    Access Swiss tournaments played on Lichess.
+    Access Swiss tournaments played on Play Strategy.
     [Read more about Swiss tournaments.](https://playstrategy.org/swiss).
 - name: Simuls
   description: |
-    Access simuls played on Lichess.
+    Access simuls played on Play Strategy.
     https://playstrategy.org/simul
 - name: Studies
   description: |
-    Access Lichess studies.
+    Access Play Strategy studies.
     https://playstrategy.org/study
 - name: Messaging
   description: |
@@ -120,20 +115,15 @@ tags:
     https://playstrategy.org/inbox
 - name: Broadcasts
   description: |
-    Relay chess events on Lichess.
-    [Official broadcasts](https://playstrategy.org/broadcast) are maintained by Lichess,
+    Relay chess events on Play Strategy.
+    [Official broadcasts](https://playstrategy.org/broadcast) are maintained by Play Strategy,
     but you can [create your own broadcasts](https://playstrategy.org/broadcast/new) to cover any live game or chess event.
-    You will need to publish PGN on a public URL so that Lichess can pull updates from it.
-    Alternatively, you can push PGN updates to Lichess using this API.
+    You will need to publish PGN on a public URL so that Play Strategy can pull updates from it.
+    Alternatively, you can push PGN updates to Play Strategy using this API.
 - name: Analysis
   description: |
-    Access Lichess cloud evaluations database.
+    Access Play Strategy cloud evaluations database.
     https://playstrategy.org/analysis
-- name: Opening Explorer
-  description: |
-    Lookup positions from the [Lichess opening explorer](https://playstrategy.org/analysis#explorer).
-
-    **The endpoint hostname is not playstrategy.org but explorer.lichess.ovh.**
 - name: OAuth
   description: |
     Requests taking advantage of OAuth authentication.
@@ -146,10 +136,10 @@ paths:
       description: |
         Read the `online`, `playing` and `streaming` flags of several users.
 
-        This API is very fast and cheap on lichess side.
+        This API is very fast and cheap on Play Strategy side.
         So you can call it quite often (like once every 5 seconds).
 
-        Use it to track players and know when they're connected on lichess and playing games.
+        Use it to track players and know when they're connected on Play Strategy and playing games.
       tags:
         - Users
       security: []
@@ -223,12 +213,12 @@ paths:
 
         See https://playstrategy.org/player.
       parameters:
-        - $ref: '#/components/parameters/lichess'
+        - $ref: '#/components/parameters/playstrategy'
       responses:
         200:
           description: The list of variants with their respective top players.
           content:
-            application/vnd.lichess.v3+json:
+            application/vnd.playstrategy.v3+json:
               schema:
                 $ref: '#/components/schemas/Top10s'
 
@@ -245,7 +235,7 @@ paths:
 
         See https://playstrategy.org/player/top/200/bullet.
       parameters:
-        - $ref: '#/components/parameters/lichess'
+        - $ref: '#/components/parameters/playstrategy'
         - in: path
           name: nb
           description: How many users to fetch
@@ -285,7 +275,7 @@ paths:
                 type: string
                 default: "'*'"
           content:
-            application/vnd.lichess.v3+json:
+            application/vnd.playstrategy.v3+json:
               schema:
                 $ref: '#/components/schemas/Leaderboard'
 
@@ -381,7 +371,7 @@ paths:
       operationId: apiPuzzleDaily
       summary: Get the daily puzzle
       description: |
-        Get the daily Lichess puzzle in JSON format.
+        Get the daily Play Strategy puzzle in JSON format.
 
         Alternatively, you can [post it in your slack workspace](https://playstrategy.org/daily-puzzle-slack).
       tags:
@@ -688,7 +678,7 @@ paths:
         - in: query
           name: players
           description: |
-            URL of a text file containing real names and ratings, to replace Lichess usernames and ratings in the PGN.
+            URL of a text file containing real names and ratings, to replace Play Strategy usernames and ratings in the PGN.
             Example: https://gist.githubusercontent.com/ornicar/6bfa91eb61a2dcae7bcd14cce1b2a4eb/raw/768b9f6cc8a8471d2555e47ba40fb0095e5fba37/gistfile1.txt
           schema:
             type: string
@@ -782,7 +772,7 @@ paths:
         - in: query
           name: players
           description: |
-            URL of a text file containing real names and ratings, to replace Lichess usernames and ratings in the PGN.
+            URL of a text file containing real names and ratings, to replace Play Strategy usernames and ratings in the PGN.
             Example: https://gist.githubusercontent.com/ornicar/6bfa91eb61a2dcae7bcd14cce1b2a4eb/raw/768b9f6cc8a8471d2555e47ba40fb0095e5fba37/gistfile1.txt
           schema:
             type: string
@@ -957,7 +947,7 @@ paths:
         - in: query
           name: players
           description: |
-            URL of a text file containing real names and ratings, to replace Lichess usernames and ratings in the PGN.
+            URL of a text file containing real names and ratings, to replace Play Strategy usernames and ratings in the PGN.
             Example: https://gist.githubusercontent.com/ornicar/6bfa91eb61a2dcae7bcd14cce1b2a4eb/raw/768b9f6cc8a8471d2555e47ba40fb0095e5fba37/gistfile1.txt
           schema:
             type: string
@@ -1051,7 +1041,7 @@ paths:
         - in: query
           name: players
           description: |
-            URL of a text file containing real names and ratings, to replace Lichess usernames and ratings in the PGN.
+            URL of a text file containing real names and ratings, to replace Play Strategy usernames and ratings in the PGN.
             Example: https://gist.githubusercontent.com/ornicar/6bfa91eb61a2dcae7bcd14cce1b2a4eb/raw/768b9f6cc8a8471d2555e47ba40fb0095e5fba37/gistfile1.txt
           schema:
             type: string
@@ -1261,7 +1251,7 @@ paths:
       description: |
         Get recently finished, ongoing, and upcoming tournaments.
 
-        This API is used to display the [Lichess tournament schedule](https://playstrategy.org/tournament).
+        This API is used to display the [Play Strategy tournament schedule](https://playstrategy.org/tournament).
       tags:
         - "Arena tournaments"
       security: []
@@ -2051,7 +2041,7 @@ paths:
                     - 0  = No-one
                     - 10 = Only team leaders
                     - 20 = Only team members
-                    - 30 = All Lichess players
+                    - 30 = All Play Strategy players
                   default: 20
               required:
                 - 'clock.limit'
@@ -2540,7 +2530,7 @@ paths:
                 syncUrl:
                   type: string
                   description: |
-                    URL that Lichess will poll to get updates about the games. It must be publicly accessible from the Internet.
+                    URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
 
                     Example: `http://myserver.org/myevent/round-10/games.pgn`
 
@@ -2560,10 +2550,10 @@ paths:
                   minimum: 1356998400070
                 official:
                   type: boolean
-                  description: For Lichess internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
+                  description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
                 throttle:
                   type: integer
-                  description: For Lichess internal usage only. You are not allowed to use this flag. If you do it, chess24 will [display ads on your broadcast](https://i.imgur.com/B47wT5P.jpg).
+                  description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will [display ads on your broadcast](https://i.imgur.com/B47wT5P.jpg).
               required:
                 - name
                 - description
@@ -2672,7 +2662,7 @@ paths:
                   syncUrl:
                     type: string
                     description: |
-                      URL that Lichess will poll to get updates about the games. It must be publicly accessible from the Internet.
+                      URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
 
                       Example: `http://myserver.org/myevent/round-10/games.pgn`
                   markdown:
@@ -2690,10 +2680,10 @@ paths:
                     minimum: 1356998400070
                   official:
                     type: boolean
-                    description: For Lichess internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
+                    description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
                   throttle:
                     type: integer
-                    description: For Lichess internal usage only. You are not allowed to use this flag. If you do it, chess24 will display ads on your broadcast.
+                    description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will display ads on your broadcast.
                 required:
                   - name
                   - description
@@ -3146,7 +3136,7 @@ paths:
       description: |
         Get basic info about currently streaming users.
 
-        This API is very fast and cheap on lichess side.
+        This API is very fast and cheap on Play Strategy side.
         So you can call it quite often (like once every 5 seconds).
       tags:
         - Users
@@ -3291,7 +3281,7 @@ paths:
       operationId: apiStreamEvent
       summary: Stream incoming events
       description: "\n
-      \ Stream the events reaching a lichess user in real time as [ndjson](http://ndjson.org/).\n\n
+      \ Stream the events reaching a Play Strategy user in real time as [ndjson](http://ndjson.org/).\n\n
       \ Each line is a JSON object containing a `type` field. Possible values are:\n
       \ - `gameStart` Start of a game\n
       \ - `gameFinish` Completion of a game\n
@@ -3675,7 +3665,7 @@ paths:
       operationId: botAccountUpgrade
       summary: Upgrade to Bot account
       description: |
-        Upgrade a lichess player account into a Bot account. Only Bot accounts can use the Bot API.
+        Upgrade a Play Strategy player account into a Bot account. Only Bot accounts can use the Bot API.
 
         The account **cannot have played any game** before becoming a Bot account. The upgrade is **irreversible**. The account will only be able to play as a Bot.
 
@@ -4182,7 +4172,7 @@ paths:
       operationId: challengeAi
       summary: Challenge the AI
       description: |
-        Start a game with Lichess AI.
+        Start a game with Play Strategy AI.
 
         You will be notified on the [event stream](#operation/apiStreamEvent) that a new game has started.
       tags:
@@ -4248,7 +4238,7 @@ paths:
                   default: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
       responses:
         200:
-          description: The game with Lichess AI was successfully started.
+          description: The game with Play Strategy AI was successfully started.
           headers:
             Access-Control-Allow-Origin:
               schema:
@@ -4259,7 +4249,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GameJson'
         400:
-          description: The creation of a game with Lichess AI failed.
+          description: The creation of a game with Play Strategy AI failed.
           content:
             application/json:
               schema:
@@ -4866,283 +4856,15 @@ paths:
             application/json:
               example: {"fen":"rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2","knodes":13683,"depth":22,"pvs":[{"moves":"c8f5 d2d4 e7e6 g1f3 g8e7 c1e3 c7c5 d4c5 e7c6 b1c3","cp":-13},{"moves":"c7c5 c2c3 d5d4 g1f3 b8c6 c3d4 c6d4 b1c3 c8d7 f1d3","cp":-1},{"moves":"e7e6 d2d4 c7c5 c2c3 b8c6 g1f3 c8d7 b1a3 c5d4 c3d4","cp":24}]}
 
-  /master:
-    get:
-      operationId: openingExplorerMaster
-      summary: Master games
-      description: |
-        **Endpoint: https://explorer.lichess.ovh/master**
-
-        Example: `curl https://explorer.lichess.ovh/master?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR%20w%20KQkq%20-%200%201`
-      tags:
-        - Opening Explorer
-      security: []
-      parameters:
-        - in: query
-          name: fen
-          required: true
-          description: FEN of the root position
-          schema:
-            type: string
-          example: rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2
-        - in: query
-          name: play
-          description: |
-            Comma separated sequence of legal moves in UCI notation, starting from the given FEN.
-            Determines the position to be looked up.
-          schema:
-            type: string
-            default: ""
-        - in: query
-          name: moves
-          description: Number of most common moves to display
-          schema:
-            type: number
-            default: 12
-        - in: query
-          name: topGames
-          description: Number of top games to display
-          schema:
-            type: number
-            default: 4
-            maximum: 4
-      responses:
-        200:
-          description: The evaluation of the position.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OpeningExplorerJson'
-
-  /lichess:
-    get:
-      operationId: openingExplorerLichess
-      summary: Lichess games
-      description: |
-        **Endpoint: https://explorer.lichess.ovh/lichess**
-
-        Runs https://github.com/niklasf/lila-openingexplorer.
-
-        Example: `curl https://explorer.lichess.ovh/lichess?variant=standard&speeds[]=blitz&speeds[]=rapid&speeds[]=classical&ratings[]=2200&ratings[]=2500&fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR%20w%20KQkq%20-%200%201`
-      tags:
-        - Opening Explorer
-      security: []
-      parameters:
-        - in: query
-          name: variant
-          description: Variant
-          required: true
-          schema:
-            type: string
-            enum:
-              - standard
-              - chess960
-              - threeCheck
-              - kingOfTheHill
-              - racingKings
-              - antichess
-              - atomic
-              - horde
-              - crazyhouse
-        - in: query
-          name: fen
-          required: true
-          description: FEN of the root position
-          schema:
-            type: string
-          example: rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2
-        - in: query
-          name: play
-          description: |
-            Comma separated sequence of legal moves in UCI notation, starting from the given FEN.
-            Determines the position to be looked up.
-          schema:
-            type: string
-            default: ""
-        - in: query
-          name: moves
-          description: Number of most common moves to display
-          schema:
-            type: number
-            default: 12
-        - in: query
-          name: topGames
-          description: Number of top games to display
-          schema:
-            type: number
-            default: 4
-            maximum: 4
-        - in: query
-          name: recentGames
-          description: Number of recent games to display
-          schema:
-            type: number
-            default: 4
-            maximum: 4
-        - in: query
-          name: speeds[]
-          description: One or more game speeds to look for
-          schema:
-            type: array
-            items:
-              type: string
-              enum:
-                - bullet
-                - blitz
-                - rapid
-                - classical
-        - in: query
-          name: ratings[]
-          description: One or more rating groups, ranging from their value to the next higher group
-          schema:
-            type: array
-            items:
-              type: number
-              enum:
-                - 1600
-                - 1800
-                - 2000
-                - 2200
-                - 2500
-      responses:
-        200:
-          description: The list of openings.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OpeningExplorerJson'
-
-  /master/pgn/{gameId}:
-    get:
-      operationId: openingExplorerMasterGame
-      summary: OTB master game
-      description: |
-        **Endpoint: https://explorer.lichess.ovh/master/pgn/{gameId}**
-
-        Example: `curl https://explorer.lichess.ovh/master/pgn/aAbqI4ey`
-      tags:
-        - Opening Explorer
-      security: []
-      parameters:
-        - in: path
-          name: gameId
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: The PGN representation of the game.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/x-chess-pgn:
-              schema:
-                $ref: '#/components/schemas/MasterGamePgn'
-
-  /stats:
-    get:
-      operationId: openingExplorerStats
-      summary: Opening explorer stats
-      description: |
-        **Endpoint: https://explorer.lichess.ovh/stats**
-
-        Example: `curl https://explorer.lichess.ovh/stats`
-      tags:
-        - Opening Explorer
-      security: []
-      responses:
-        200:
-          description: The statistics of the Opening Explorer.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              example: {"master":{"games":2299868,"uniquePositions":56683918},"lichess":{"chess960":{"games":2259840,"uniquePositions":190488295},"standard":{"games":272515941,"uniquePositions":7355380242},"antichess":{"games":7818476,"uniquePositions":177073596},"horde":{"games":1027171,"uniquePositions":34843126},"atomic":{"games":3827483,"uniquePositions":70119949},"racingKings":{"games":747878,"uniquePositions":11671677},"kingOfTheHill":{"games":1345370,"uniquePositions":38511395},"crazyhouse":{"games":7540244,"uniquePositions":218945811},"threeCheck":{"games":1362591,"uniquePositions":29181473}}}
-
-  /standard:
-    get:
-      operationId: tablebaseStandard
-      summary: Tablebase lookup
-      description: |
-        **Endpoint: https://tablebase.lichess.ovh**
-
-        Runs https://github.com/niklasf/lila-tablebase with `--sloppy-real-wdl`.
-
-        Example: `curl http://tablebase.lichess.ovh/standard?fen=4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1`
-      tags:
-        - Tablebase
-      security: []
-      parameters:
-        - in: query
-          name: fen
-          description: FEN of the position. Underscores allowed. The halfmove clock is taken into account for WDL values.
-      responses:
-        200:
-          description: The tablebase information for the position in standard chess.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TablebaseJson'
-  /atomic:
-    get:
-      operationId: tablebaseAtomic
-      summary: Tablebase lookup for Atomic chess
-      tags:
-        - Tablebase
-      responses:
-        200:
-          description: The tablebase information for the position in atomic chess.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-
-  /antichess:
-    get:
-      operationId: antichessAtomic
-      summary: Tablebase lookup for Antichess
-      tags:
-        - Tablebase
-      responses:
-        200:
-          description: The tablebase information for the position in atomic chess.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-
 
 components:
   parameters:
-    lichess:
+    playstrategy:
       in: header
       name: Accept
       schema:
         type: string
-        default: application/vnd.lichess.v3+json
+        default: application/vnd.playstrategy.v3+json
       required: true
   schemas:
     Clock:
@@ -6108,7 +5830,7 @@ components:
           "limit": 180
         },
         "minutes": 57,
-        "createdBy": "lichess",
+        "createdBy": "playstrategy",
         "system": "arena",
         "secondsToStart": 0,
         "secondsToFinish": 36000,
@@ -6581,19 +6303,17 @@ components:
     OAuth2:
       type: oauth2
       description: "### Authorization Code Flow\n\
-        \ The authorization code flow allows your users to **login with lichess**.\n\
+        \ The authorization code flow allows your users to **login with Play Strategy**.\n\
         \ - [NodeJS example](https://github.com/Mind-Sports-Games/api/tree/master/example/oauth-authorization-code)\n\
         \ - [Flask/Python example](https://github.com/lakinwecker/lichess-oauth-flask)\n\
         \ - [NodeJS Passport strategy to login with Lichess OAuth2](https://www.npmjs.com/package/passport-lichess)\n\
         \ - [Create a Lichess OAuth app](https://playstrategy.org/account/oauth/app)\n\
         \ - [About authorization code flow](https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2#grant-type-authorization-code)\n\
         \n#### Real life Oauth2 Authorization Code Flow examples\n\
-        \ - [PyChess](https://github.com/gbtami/pychess-variants) ([source code](https://github.com/gbtami/pychess-variants))\n\
-        \ - [Lichess4545](https://www.lichess4545.com/) ([source code](https://github.com/cyanfish/heltour))\n\
         \ - [English Chess Federation](https://ecf.octoknight.com/)\n\
         \ - [Rotherham Online Chess](https://rotherhamonlinechess.azurewebsites.net/tournaments)\n\
         \n### Personal API Token\n\
-        \ Personal API tokens allow you to quickly interact with Lichess OAuth API.\n\
+        \ Personal API tokens allow you to quickly interact with Play Strategy OAuth API.\n\
         \ - `curl https://playstrategy.org/api/account -H \"Authorization: Bearer <token>\"`\n\
         \ - [NodeJS example](https://github.com/Mind-Sports-Games/api/tree/master/example/oauth-personal-token)\n\
         \ - [Generate a personal API token](https://playstrategy.org/account/oauth/token)"
