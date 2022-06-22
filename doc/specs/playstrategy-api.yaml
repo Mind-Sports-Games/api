@@ -366,65 +366,65 @@ paths:
               example:
                 https://gist.github.com/ornicar/0ee2d2427cb74ed1a35e86f5ba09fabc
 
-  /api/puzzle/daily:
-    get:
-      operationId: apiPuzzleDaily
-      summary: Get the daily puzzle
-      description: |
-        Get the daily Play Strategy puzzle in JSON format.
+#   /api/puzzle/daily:
+#     get:
+#       operationId: apiPuzzleDaily
+#       summary: Get the daily puzzle
+#       description: |
+#         Get the daily Play Strategy puzzle in JSON format.
 
-        Alternatively, you can [post it in your slack workspace](https://playstrategy.org/daily-puzzle-slack).
-      tags:
-        - Puzzles
-      security: []
-      responses:
-        200:
-          description: The daily puzzle.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/x-ndjson:
-              schema:
-                $ref: '#/components/schemas/PuzzleJson'
+#         Alternatively, you can [post it in your slack workspace](https://playstrategy.org/daily-puzzle-slack).
+#       tags:
+#         - Puzzles
+#       security: []
+#       responses:
+#         200:
+#           description: The daily puzzle.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/x-ndjson:
+#               schema:
+#                 $ref: '#/components/schemas/PuzzleJson'
 
-  /api/puzzle/activity:
-    get:
-      operationId: apiPuzzleActivity
-      summary: Get your puzzle activity
-      description: |
-        Download your puzzle activity in [ndjson](http://ndjson.org/) format.
+#   /api/puzzle/activity:
+#     get:
+#       operationId: apiPuzzleActivity
+#       summary: Get your puzzle activity
+#       description: |
+#         Download your puzzle activity in [ndjson](http://ndjson.org/) format.
 
-        Puzzle activity is sorted by reverse chronological order (most recent first)
+#         Puzzle activity is sorted by reverse chronological order (most recent first)
 
-        We recommend streaming the response, for it can be very long.
-      tags:
-        - Puzzles
-        - OAuth
-      security:
-        - OAuth2: ["puzzle:read"]
-      parameters:
-        - in: query
-          name: max
-          description: How many entries to download. Leave empty to download all activity.
-          schema:
-            type: integer
-            minimum: 1
-            default: null
-      responses:
-        200:
-          description: The puzzle activity of the logged in user.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/x-ndjson:
-              schema:
-                $ref: '#/components/schemas/PuzzleRoundJson'
+#         We recommend streaming the response, for it can be very long.
+#       tags:
+#         - Puzzles
+#         - OAuth
+#       security:
+#         - OAuth2: ["puzzle:read"]
+#       parameters:
+#         - in: query
+#           name: max
+#           description: How many entries to download. Leave empty to download all activity.
+#           schema:
+#             type: integer
+#             minimum: 1
+#             default: null
+#       responses:
+#         200:
+#           description: The puzzle activity of the logged in user.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/x-ndjson:
+#               schema:
+#                 $ref: '#/components/schemas/PuzzleRoundJson'
 
   /api/users:
     post:
@@ -5160,15 +5160,15 @@ components:
         prov:
           type: boolean
 
-    StormPerf:
-      type: object
-      properties:
-        runs:
-          type: integer
-          example: 44
-        score:
-          type: integer
-          example: 61
+#     StormPerf:
+#       type: object
+#       properties:
+#         runs:
+#           type: integer
+#           example: 44
+#         score:
+#           type: integer
+#           example: 61
 
     Perfs:
       type: object
@@ -5191,14 +5191,14 @@ components:
           $ref: '#/components/schemas/Perf'
         horde:
           $ref: '#/components/schemas/Perf'
-        puzzle:
-          $ref: '#/components/schemas/Perf'
+#         puzzle:
+#           $ref: '#/components/schemas/Perf'
         classical:
           $ref: '#/components/schemas/Perf'
         rapid:
           $ref: '#/components/schemas/Perf'
-        storm:
-          $ref: '#/components/schemas/StormPerf'
+#         storm:
+#           $ref: '#/components/schemas/StormPerf'
 
     PlayTime:
       type: object
@@ -5377,140 +5377,140 @@ components:
           }
         }
 
-    PuzzleJson:
-      example: {
-        "game": {
-            "clock": "10+0",
-            "id": "VpVdGbna",
-            "perf": {
-                "icon": "#",
-                "name": "Rapid"
-            },
-            "pgn": "d4 Nf6 Nf3 g6 Nc3 d6 e4 c5 Be3 cxd4 Bxd4 Nc6 Be3 Qa5 Bd2 Bg7 Be2 O-O O-O Qb6 Rb1 Bg4 h3 Bxf3 Bxf3 Nd4 Be3 Nxf3+ Qxf3 Qc6 Bd4 a6 Bxf6 Bxf6 Nd5 Qxc2 Nxf6+ exf6 Qxf6 Qxe4 Qxd6 Rad8 Qb6 Rfe8 Rfe1 Qxe1+ Rxe1 Rxe1+ Kh2 Rd2 Kg3 Ree2 Qxb7 Rxb2 Qxa6 Rxa2 Qc8+ Kg7 Qc3+ Kg8 Qc5 Rxf2 Qc8+ Kg7 Qc3+ Kh6 Qe3+ Kg7 Qe5+ Kf8 Qh8+ Ke7 Qe5+ Kf8 Qb8+ Kg7 Qe5+ f6 Qe7+ Kh6 Qf8+ Kg5 h4+ Kh5 Qc5+ f5 Qc1 Rxg2+ Kh3 Rh2+ Kg3 Rag2+ Kf3 Rg4 Qd1 Rhxh4 Kf2 Rh2+ Kf3 Rh3+ Ke2 Rg2+ Kf1+ Rg4 Kf2 g5 Qd8 h6 Qe8+ Kh4 Kf1 h5 Qe1+ Rhg3 Qe5 f4 Qe1 f3 Kf2 Rf4 Qh1+ Rh3 Qe1 g4",
-            "players": [
-                {
-                    "color": "white",
-                    "name": "borska (2013)",
-                    "userId": "borska"
-                },
-                {
-                    "color": "black",
-                    "name": "Xxn00bkillar69xX (1990)",
-                    "userId": "xxn00bkillar69xx"
-                }
-            ],
-            "rated": true
-        },
-        "puzzle": {
-            "id": "K69di",
-            "initialPly": 123,
-            "plays": 1970,
-            "rating": 2022,
-            "solution": [
-                "e1e7",
-                "f4f6",
-                "e7f6"
-            ],
-            "themes": [
-                "short",
-                "queenRookEndgame",
-                "endgame",
-                "mateIn2"
-            ]
-        },
-    }
+#     PuzzleJson:
+#       example: {
+#         "game": {
+#             "clock": "10+0",
+#             "id": "VpVdGbna",
+#             "perf": {
+#                 "icon": "#",
+#                 "name": "Rapid"
+#             },
+#             "pgn": "d4 Nf6 Nf3 g6 Nc3 d6 e4 c5 Be3 cxd4 Bxd4 Nc6 Be3 Qa5 Bd2 Bg7 Be2 O-O O-O Qb6 Rb1 Bg4 h3 Bxf3 Bxf3 Nd4 Be3 Nxf3+ Qxf3 Qc6 Bd4 a6 Bxf6 Bxf6 Nd5 Qxc2 Nxf6+ exf6 Qxf6 Qxe4 Qxd6 Rad8 Qb6 Rfe8 Rfe1 Qxe1+ Rxe1 Rxe1+ Kh2 Rd2 Kg3 Ree2 Qxb7 Rxb2 Qxa6 Rxa2 Qc8+ Kg7 Qc3+ Kg8 Qc5 Rxf2 Qc8+ Kg7 Qc3+ Kh6 Qe3+ Kg7 Qe5+ Kf8 Qh8+ Ke7 Qe5+ Kf8 Qb8+ Kg7 Qe5+ f6 Qe7+ Kh6 Qf8+ Kg5 h4+ Kh5 Qc5+ f5 Qc1 Rxg2+ Kh3 Rh2+ Kg3 Rag2+ Kf3 Rg4 Qd1 Rhxh4 Kf2 Rh2+ Kf3 Rh3+ Ke2 Rg2+ Kf1+ Rg4 Kf2 g5 Qd8 h6 Qe8+ Kh4 Kf1 h5 Qe1+ Rhg3 Qe5 f4 Qe1 f3 Kf2 Rf4 Qh1+ Rh3 Qe1 g4",
+#             "players": [
+#                 {
+#                     "color": "white",
+#                     "name": "borska (2013)",
+#                     "userId": "borska"
+#                 },
+#                 {
+#                     "color": "black",
+#                     "name": "Xxn00bkillar69xX (1990)",
+#                     "userId": "xxn00bkillar69xx"
+#                 }
+#             ],
+#             "rated": true
+#         },
+#         "puzzle": {
+#             "id": "K69di",
+#             "initialPly": 123,
+#             "plays": 1970,
+#             "rating": 2022,
+#             "solution": [
+#                 "e1e7",
+#                 "f4f6",
+#                 "e7f6"
+#             ],
+#             "themes": [
+#                 "short",
+#                 "queenRookEndgame",
+#                 "endgame",
+#                 "mateIn2"
+#             ]
+#         },
+#     }
 
-    PuzzleRoundJson:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "BwPiW"
-        date:
-          type: number
-          example: 1514505150384
-        win:
-          type: boolean
-          example: true
-        puzzleRating:
-          type: number
-          example: 1877
+#     PuzzleRoundJson:
+#       type: object
+#       properties:
+#         id:
+#           type: string
+#           example: "BwPiW"
+#         date:
+#           type: number
+#           example: 1514505150384
+#         win:
+#           type: boolean
+#           example: true
+#         puzzleRating:
+#           type: number
+#           example: 1877
 
-    PuzzleDashboardJson:
-      example: {
-        "days": 30,
-        "global": {
-          "firstWins": 276,
-          "nb": 501,
-          "performance": 1570,
-          "puzzleRatingAvg": 1523,
-          "replayWins": 2
-        },
-        "themes": {
-          "advancedPawn": {
-            "results": {
-              "firstWins": 19,
-              "nb": 39,
-              "performance": 1438,
-              "puzzleRatingAvg": 1476,
-              "replayWins": 1
-            },
-            "theme": "Advanced pawn"
-          },
-          "anastasiaMate": {
-            "results": {
-              "firstWins": 5,
-              "nb": 6,
-              "performance": 1720,
-              "puzzleRatingAvg": 1387,
-              "replayWins": 0
-            },
-            "theme": "Anastasia's mate"
-          }
-        }
-      }
+#     PuzzleDashboardJson:
+#       example: {
+#         "days": 30,
+#         "global": {
+#           "firstWins": 276,
+#           "nb": 501,
+#           "performance": 1570,
+#           "puzzleRatingAvg": 1523,
+#           "replayWins": 2
+#         },
+#         "themes": {
+#           "advancedPawn": {
+#             "results": {
+#               "firstWins": 19,
+#               "nb": 39,
+#               "performance": 1438,
+#               "puzzleRatingAvg": 1476,
+#               "replayWins": 1
+#             },
+#             "theme": "Advanced pawn"
+#           },
+#           "anastasiaMate": {
+#             "results": {
+#               "firstWins": 5,
+#               "nb": 6,
+#               "performance": 1720,
+#               "puzzleRatingAvg": 1387,
+#               "replayWins": 0
+#             },
+#             "theme": "Anastasia's mate"
+#           }
+#         }
+#       }
 
-    StormDashboardJson:
-      example: {
-        "high": {
-            "allTime": 11,
-            "day": 0,
-            "month": 7,
-            "week": 0
-        },
-        "days": [
-            {
-                "_id": "2021/1/28",
-                "combo": 8,
-                "errors": 1,
-                "highest": 1084,
-                "moves": 9,
-                "runs": 26,
-                "score": 4,
-                "time": 175
-            },
-            {
-                "_id": "2021/1/27",
-                "combo": 14,
-                "errors": 1,
-                "highest": 1095,
-                "moves": 15,
-                "runs": 15,
-                "score": 7,
-                "time": 23
-            },
-            {
-                "_id": "2021/1/22",
-                "combo": 14,
-                "errors": 1,
-                "highest": 1095,
-                "moves": 15,
-                "runs": 15,
-                "score": 3,
-                "time": 23
-            },
-        ]
-    }
+#     StormDashboardJson:
+#       example: {
+#         "high": {
+#             "allTime": 11,
+#             "day": 0,
+#             "month": 7,
+#             "week": 0
+#         },
+#         "days": [
+#             {
+#                 "_id": "2021/1/28",
+#                 "combo": 8,
+#                 "errors": 1,
+#                 "highest": 1084,
+#                 "moves": 9,
+#                 "runs": 26,
+#                 "score": 4,
+#                 "time": 175
+#             },
+#             {
+#                 "_id": "2021/1/27",
+#                 "combo": 14,
+#                 "errors": 1,
+#                 "highest": 1095,
+#                 "moves": 15,
+#                 "runs": 15,
+#                 "score": 7,
+#                 "time": 23
+#             },
+#             {
+#                 "_id": "2021/1/22",
+#                 "combo": 14,
+#                 "errors": 1,
+#                 "highest": 1095,
+#                 "moves": 15,
+#                 "runs": 15,
+#                 "score": 3,
+#                 "time": 23
+#             },
+#         ]
+#     }
 
     RatingHistory:
       example: [{"name":"Bullet","points":[[2011,0,8,1472],[2011,0,9,1332],[2011,8,12,1314]]},{"name":"Blitz","points":[[2011,7,29,1332]]}]
@@ -6331,7 +6331,7 @@ components:
             "study:read": Read private studies and broadcasts
             "study:write": Create, update, delete studies and broadcasts
             "tournament:write": Create tournaments
-            "puzzle:read": Read puzzle activity
+#             "puzzle:read": Read puzzle activity
             "team:write": Join, leave, and manage teams
             "msg:write": Send private messages to other players
             "board:play": Play with the Board API
