@@ -265,6 +265,29 @@ paths:
               - kingOfTheHill
               - racingKings
               - threeCheck
+              - fiveCheck
+              - noCastling
+              - linesOfAction
+              - scrambledEggs
+              - international
+              - antidraughts
+              - breakthrough
+              - pool
+              - frisian
+              - frysk
+              - russian
+              - spanish
+              - brazilian
+              - english
+              - shogi
+              - xangqi
+              - minishogi
+              - minixangqi
+              - flipello
+              - flipello10
+              - amazons
+              - togyzkumalak
+              - oware
           required: true
       responses:
         200:
