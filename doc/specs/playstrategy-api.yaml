@@ -876,14 +876,14 @@ paths:
               - racingKings
               - threeCheck
         - in: query
-          name: color
-          description: "[Filter] Only games played as this color."
+          name: playerIndex
+          description: "[Filter] Only games played as this playerIndex."
           schema:
             type: string
             default: null
             enum:
-              - white
-              - black
+              - p1
+              - p2
         - in: query
           name: analysed
           description: "[Filter] Only games with or without a computer analysis available"
@@ -1091,7 +1091,7 @@ paths:
           content:
             application/x-ndjson:
               schema:
-                example: {"id":"A5fcMO3k","rated":true,"variant":"standard","speed":"bullet","perf":"bullet","createdAt":1525789431889,"status":20,"clock":{"initial":60,"increment":0,"totalTime":60},"players":{"white":{"userId":"kastorcito","rating":2617},"black":{"userId":"er_or","rating":2288}}}
+                example: {"id":"A5fcMO3k","rated":true,"variant":"standard","speed":"bullet","perf":"bullet","createdAt":1525789431889,"status":20,"clock":{"initial":60,"increment":0,"totalTime":60},"players":{"p1":{"userId":"kastorcito","rating":2617},"p2":{"userId":"er_or","rating":2288}}}
 
   /api/account/playing:
     get:
@@ -1126,7 +1126,7 @@ paths:
           content:
             application/json:
               schema:
-                example: {"nowPlaying":[{"fullId":"knbD9FPUqhra","gameId":"knbD9FPU","fen":"rnbqkbnr/pp3pp1/8/3p3p/1PpPp3/P1P1P3/5PPP/RNBQKBNR","color":"white","lastMove":"c5c4","variant":{"key":"standard","name":"Standard"},"speed":"correspondence","perf":"correspondence","rated":true,"opponent":{"id":"thibot","username":"BOT thibot","rating":1500},"isMyTurn":true}]}
+                example: {"nowPlaying":[{"fullId":"knbD9FPUqhra","gameId":"knbD9FPU","fen":"rnbqkbnr/pp3pp1/8/3p3p/1PpPp3/P1P1P3/5PPP/RNBQKBNR","playerIndex":"p1","lastMove":"c5c4","variant":{"key":"standard","name":"Standard"},"speed":"correspondence","perf":"correspondence","rated":true,"opponent":{"id":"thibot","username":"BOT thibot","rating":1500},"isMyTurn":true}]}
 
   /api/tv/channels:
     get:
@@ -1172,7 +1172,7 @@ paths:
             application/x-ndjson:
               schema:
                 example:
-                  {"t":"featured","d":{"id":"qVSOPtMc","orientation":"black","players":[{"color":"white","user":{"name":"lizen9","id":"lizen9","title":"GM"},"rating":2531},{"color":"black","user":{"name":"lizen29","title":"WGM","id":"lizen29"},"rating":2594}],"fen":"rnbqk1r1/ppp1ppbp/8/N2p2p1/8/1PQPP3/P1P2PPn/R1B1K1NR"}}
+                  {"t":"featured","d":{"id":"qVSOPtMc","orientation":"p2","players":[{"playerIndex":"p1","user":{"name":"lizen9","id":"lizen9","title":"GM"},"rating":2531},{"playerIndex":"p2","user":{"name":"lizen29","title":"WGM","id":"lizen29"},"rating":2594}],"fen":"rnbqk1r1/ppp1ppbp/8/N2p2p1/8/1PQPP3/P1P2PPn/R1B1K1NR"}}
 
   /api/stream/game/{id}:
     get:
@@ -1198,7 +1198,7 @@ paths:
             application/x-ndjson:
               schema:
                 example: |
-                  {"id":"LuGQwhBb","variant":{"key":"standard","name":"Standard","short":"Std"},"speed":"blitz","perf":"blitz","rated":true,"initialFen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","fen":"rnbqkb1r/1p1ppppp/p6n/2p4Q/8/1P2P3/P1PP1PPP/RNB1KBNR w KQkq - 0 4","player":"white","turns":6,"startedAtTurn":0,"source":"pool","status":{"id":20,"name":"started"},"createdAt":1620029815106,"lastMove":"c7c5"}
+                  {"id":"LuGQwhBb","variant":{"key":"standard","name":"Standard","short":"Std"},"speed":"blitz","perf":"blitz","rated":true,"initialFen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","fen":"rnbqkb1r/1p1ppppp/p6n/2p4Q/8/1P2P3/P1PP1PPP/RNB1KBNR w KQkq - 0 4","player":"p1","turns":6,"startedAtTurn":0,"source":"pool","status":{"id":20,"name":"started"},"createdAt":1620029815106,"lastMove":"c7c5"}
                   {"fen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w","wc":180,"bc":180}
                   {"fen":"rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b","lm":"e2e3","wc":180,"bc":180}
                   {"fen":"rnbqkb1r/pppppppp/7n/8/8/4P3/PPPP1PPP/RNBQKBNR w","lm":"g8h6","wc":180,"bc":180}
@@ -3218,6 +3218,60 @@ paths:
               schema:
                 $ref: '#/components/schemas/Crosstable'
 
+  /api/player/autocomplete:
+    get:
+      operationId: apiPlayerAutocomplete
+      summary: Autocomplete usernames
+      description: |
+        Provides autocompletion options for an incomplete username.
+      tags:
+        - Users
+      security: []
+      parameters:
+        - in: query
+          name: term
+          description: The beginning of a username
+          schema:
+            type: string
+            minLength: 3
+          required: true
+        - in: query
+          name: object
+          description: |
+            - `false` returns an array of usernames
+            - `true` returns an object with matching users
+          schema:
+            type: boolean
+            default: false
+        - in: query
+          name: friend
+          description: |
+            Returns followed players matching `term` if any, else returns other players.
+            Requires [OAuth](#tag/OAuth).
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: An array of players which usernames start with the provided term.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      type: string
+                  - type: object
+                    properties:
+                      result:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LightUser'
+
   /api/user/{username}/following:
     get:
       operationId: apiUserFollowing
@@ -3306,7 +3360,7 @@ paths:
           content:
             text/plain:
               example: |
-                {"type":"challenge","challenge":{"id":"7pGLxJ4F","status":"created","challenger":{"id":"lovlas","name":"Lovlas","title":"IM","rating":2506,"patron":true,"online":true,"lag":24},"destUser":{"id":"thibot","name":"thibot","title":null,"rating":1500,"provisional":true,"online":true,"lag":45},"variant":{"key":"standard","name":"Standard","short":"Std"},"rated":true,"timeControl":{"type":"clock","limit":300,"increment":25,"show":"5+25"},"color":"random","perf":{"icon":"#","name":"Rapid"}}}
+                {"type":"challenge","challenge":{"id":"7pGLxJ4F","status":"created","challenger":{"id":"lovlas","name":"Lovlas","title":"IM","rating":2506,"patron":true,"online":true,"lag":24},"destUser":{"id":"thibot","name":"thibot","title":null,"rating":1500,"provisional":true,"online":true,"lag":45},"variant":{"key":"standard","name":"Standard","short":"Std"},"rated":true,"timeControl":{"type":"clock","limit":300,"increment":25,"show":"5+25"},"playerIndex":"random","perf":{"icon":"#","name":"Rapid"}}}
                 {"type":"gameStart","game":{"id":"1lsvP62l"}}
 
   /api/board/seek:
@@ -3364,13 +3418,13 @@ paths:
                     - racingKings
                     - threeCheck
                   default: standard
-                color:
+                playerIndex:
                   type: string
-                  description: The color to play. Better left empty to automatically get 50% white.
+                  description: The playerIndex to play. Better left empty to automatically get 50% starting player (p1).
                   enum:
                     - random
-                    - white
-                    - black
+                    - p1
+                    - p2
                   default: random
                 ratingRange:
                   type: string
@@ -3968,13 +4022,13 @@ paths:
                   example: 5
                   minimum: 1
                   maximum: 15
-                color:
+                playerIndex:
                   type: string
-                  description: Which color you get to play
+                  description: Which playerIndex you get to play
                   enum:
                     - random
-                    - white
-                    - black
+                    - p1
+                    - p2
                   default: 'random'
                 variant:
                   type: string
@@ -4210,13 +4264,13 @@ paths:
                   example: 5
                   minimum: 1
                   maximum: 15
-                color:
+                playerIndex:
                   type: string
-                  description: Which color you get to play
+                  description: Which playerIndex you get to play
                   enum:
                     - random
-                    - white
-                    - black
+                    - p1
+                    - p2
                   default: 'random'
                 variant:
                   type: string
@@ -4264,8 +4318,8 @@ paths:
 
         Share the URL of the challenge. the first 2 players to click it will be paired for a game.
 
-        The response body also contains `whiteUrl` and `blackUrl`.
-        You can control which color each player gets by giving them these URLs,
+        The response body also contains `p1Url` and `p2Url`.
+        You can control the starting player by giving players the specific URLs,
         instead of the main challenge URL.
 
         Open challenges expire after 24h.
@@ -4451,9 +4505,9 @@ paths:
                 players:
                   type: string
                   description: |
-                    OAuth tokens of all the players to pair, with the syntax `tokenOfWhitePlayerInGame1:tokenOfBlackPlayerInGame1,tokenOfWhitePlayerInGame2:tokenOfBlackPlayerInGame2,...`.
+                    OAuth tokens of all the players to pair, with the syntax `tokenOfP1PlayerInGame1:tokenOfP2PlayerInGame1,tokenOfP1PlayerInGame2:tokenOfP2PlayerInGame2,...`.
 
-                    The 2 tokens of the players of a game are separated with `:`. The first token gets the white pieces. Games are separated with `,`.
+                    The 2 tokens of the players of a game are separated with `:`. The first token gets the starting player (white) pieces. Games are separated with `,`.
 
                     Up to 1000 tokens can be sent, for a max of 500 games.
 
@@ -4713,13 +4767,13 @@ paths:
                   example: 5
                   minimum: 1
                   maximum: 15
-                color:
+                playerIndex:
                   type: string
-                  description: Which color you get to play
+                  description: Which playerIndex you get to play
                   enum:
                     - random
-                    - white
-                    - black
+                    - p1
+                    - p2
                   default: 'random'
                 variant:
                   type: string
@@ -4879,7 +4933,7 @@ components:
       example: {
         "id": "VU0nyvsW",
         "url": "https://playstrategy.org/VU0nyvsW",
-        "color": "random",
+        "playerIndex": "random",
         "direction": "out",
         "timeControl": {
           "increment": 2,
@@ -4921,9 +4975,9 @@ components:
       example: {
         "id": "VU0nyvsW",
         "url": "https://playstrategy.org/VU0nyvsW",
-        "urlWhite": "https://playstrategy.org/VU0nyvsW?color=white",
-        "urlBlack": "https://playstrategy.org/VU0nyvsW?color=black",
-        "color": "random",
+        "urlp1": "https://playstrategy.org/VU0nyvsW?playerIndex=p1",
+        "urlp2": "https://playstrategy.org/VU0nyvsW?playerIndex=p2",
+        "playerIndex": "random",
         "direction": "out",
         "timeControl": {
           "increment": 2,
@@ -5900,14 +5954,14 @@ components:
         "featured": {
           "id": "khe72Fer",
           "fen": "rn1qkb1r/pQ3ppp/2b2n2/8/5P2/4P3/PP4PP/RNB1KBNR",
-          "color": "black",
+          "playerIndex": "p2",
           "lastMove": "d7c6",
-          "white": {
+          "p1": {
             "rank": 2,
             "name": "player1",
             "rating": 1360
           },
-          "black": {
+          "p2": {
             "rank": 5,
             "name": "player2",
             "rating": 1431
@@ -6195,7 +6249,7 @@ components:
               description: Game status code. https://github.com/ornicar/scalachess/blob/0a7d6f2c63b1ca06cd3c958ed3264e738af5c5f6/src/main/scala/Status.scala#L16-L28
             winner:
               type: string
-              description: Color of the winner, if any
+              description: PlayerIndex of the winner, if any
       example: [
         {
           "type": "gameFull",
@@ -6274,7 +6328,7 @@ components:
 
     StreamEvents:
       example: |
-        {"type":"challenge","challenge":{"id":"7pGLxJ4F","status":"created","challenger":{"id":"lovlas","name":"Lovlas","title":"IM","rating":2506,"patron":true,"online":true,"lag":24},"destUser":{"id":"thibot","name":"thibot","title":null,"rating":1500,"provisional":true,"online":true,"lag":45},"variant":{"key":"standard","name":"Standard","short":"Std"},"rated":true,"timeControl":{"type":"clock","limit":300,"increment":25,"show":"5+25"},"color":"random","perf":{"icon":"#","name":"Rapid"}}}
+        {"type":"challenge","challenge":{"id":"7pGLxJ4F","status":"created","challenger":{"id":"lovlas","name":"Lovlas","title":"IM","rating":2506,"patron":true,"online":true,"lag":24},"destUser":{"id":"thibot","name":"thibot","title":null,"rating":1500,"provisional":true,"online":true,"lag":45},"variant":{"key":"standard","name":"Standard","short":"Std"},"rated":true,"timeControl":{"type":"clock","limit":300,"increment":25,"show":"5+25"},"playerIndex":"random","perf":{"icon":"#","name":"Rapid"}}}
         {"type":"gameStart","game":{"id":"1lsvP62l"}}
 
     Ok:
