@@ -1,7 +1,7 @@
-# Lichess API doc & examples
+# PlayStrategy API doc & examples
 
 - [API documentation](https://playstrategy.org/api)
-- [OAuth app example](https://github.com/lichess-org/api/tree/master/example/oauth-authorization-code)
+- [OAuth app example](https://github.com/Mind-Sports-Games/api/tree/master/example/oauth-authorization-code)
 
 ## Contribute
 
