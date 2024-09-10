@@ -6,7 +6,7 @@ export default function(app: Express.Express, env: Env) {
 
   app.get('/', async (req, res) => {
     const auth = await env.mongo.auth.get(req.session?.authId || '');
-    if (!auth) return res.send(htmlPage(`<a href="/auth">Login with Lichess to continue</a>`));
+    if (!auth) return res.send(htmlPage(`<a href="/auth">Login with PlayStrategy to continue</a>`));
     return res.send(htmlPage(`
     <main></main>
     <script src="/dist/app.dev.js"></script>
@@ -41,7 +41,7 @@ export default function(app: Express.Express, env: Env) {
 const htmlPage = (content: string) => `
 <html>
   <head>
-    <title>Lichess App example</title>
+    <title>PlayStrategy App example</title>
     <link href="/style.css" rel="stylesheet">
   </head>
   <body>
