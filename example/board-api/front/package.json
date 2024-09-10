@@ -1,5 +1,5 @@
 {
-  "name": "lichess-puzzle-validator-front",
+  "name": "playstrategy-puzzle-validator-front",
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",

@@ -4,7 +4,7 @@ import { makeBoardFen } from 'chessops/fen';
 import ndjson from './ndjson';
 import {Chess, parseUci} from 'chessops';
 
-const lichess = 'https://lichess.org';
+const playstrategy = 'https://playstrategy.org';
 
 export default class Ctrl {
 
@@ -16,7 +16,7 @@ export default class Ctrl {
 
   constructor(readonly login: ServerLogin, readonly redraw: () => void) {
     this.authorization = { 'Authorization': `Bearer ${login.token}` };
-    fetch(`${lichess}/api/stream/event`, { headers: this.authorization })
+    fetch(`${playstrategy}/api/stream/event`, { headers: this.authorization })
       .then(res => {
         this.mainLog.push('Connected');
         return res;
@@ -32,7 +32,7 @@ export default class Ctrl {
   }
 
   gameStart = (id: string) =>
-    fetch(`${lichess}/api/board/game/stream/${id}`, { headers: this.authorization })
+    fetch(`${playstrategy}/api/board/game/stream/${id}`, { headers: this.authorization })
       .then(ndjson(this.onGameEvent));
 
   onGameEvent = (event: any) => {

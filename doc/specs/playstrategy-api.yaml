@@ -62,7 +62,7 @@ tags:
   \ - [Lichs (play from command-line)](https://github.com/Cqsi/lichs)"
 - name: Bot
   description: "Play on Play Strategy as a bot. Allows engine play.\n
-  \ Read the [blog post announcement of lichess bots](https://lichess.org/blog/WvDNticAAMu_mHKP/welcome-lichess-bots). (Note, some changes between Lichess and Play Strategy may be required)\n\n
+  \ Read the [blog post announcement of playstrategy bots](https://playstrategy.org/blog/YvJkQxAAACIApTnD/welcome-playstrategy-bots). (Note, some changes between Lichess and Play Strategy may be required)\n\n
   \ Only works with [Bot accounts](#operation/botAccountUpgrade).\n\n\
   \n### Features\n\
   \ - [Stream incoming chess moves](#operation/botGameStream)\n\
@@ -80,7 +80,7 @@ tags:
   \ - [Golang lichess-bot](https://github.com/dolegi/lichess-bot) (Note: Some changes may be required)\n\
   \ - Yours? Please make [an issue or pull request](https://github.com/Mind-Sports-Games/api).\n\
   \n### Links\n\
-  \ - [Announcement](https://lichess.org/blog/WvDNticAAMu_mHKP/welcome-lichess-bots)\n\
+  \ - [Announcement](https://playstrategy.org/blog/YvJkQxAAACIApTnD/welcome-playstrategy-bots)\n\
   \ - Watch [Play Strategy Bot TV](https://playstrategy.org/tv/bot)"
 - name: Challenges
   description: |
@@ -6361,7 +6361,7 @@ components:
         \ - [NodeJS example](https://github.com/Mind-Sports-Games/api/tree/master/example/oauth-authorization-code)\n\
         \ - [Flask/Python example](https://github.com/lakinwecker/lichess-oauth-flask)\n\
         \ - [NodeJS Passport strategy to login with Lichess OAuth2](https://www.npmjs.com/package/passport-lichess)\n\
-        \ - [Create a Lichess OAuth app](https://playstrategy.org/account/oauth/app)\n\
+        \ - [Create a PlayStrategy OAuth app](https://playstrategy.org/account/oauth/app)\n\
         \ - [About authorization code flow](https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2#grant-type-authorization-code)\n\
         \n#### Real life Oauth2 Authorization Code Flow examples\n\
         \ - [English Chess Federation](https://ecf.octoknight.com/)\n\
