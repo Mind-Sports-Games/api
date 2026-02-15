@@ -5093,6 +5093,7 @@ components:
         "createdAt": 1514505150384,
         "lastMoveAt": 1514505592843,
         "status": "draw",
+        "abortable": false,
         "players": {
           "white": {
             "user": {
@@ -6250,6 +6251,9 @@ components:
             winner:
               type: string
               description: PlayerIndex of the winner, if any
+            abortable:
+              type: boolean
+              description: Whether the game can be aborted
       example: [
         {
           "type": "gameFull",
@@ -6290,7 +6294,8 @@ components:
             "btime": 8395220,
             "winc": 10000,
             "binc": 10000,
-            "status": "started"
+            "status": "started",
+            "abortable": true
           }
         },
         {
@@ -6300,7 +6305,8 @@ components:
           "btime": 8395220,
           "winc": 10000,
           "binc": 10000,
-          "status": "started"
+          "status": "started",
+          "abortable": false
         },
         {
           "type": "chatLine",
@@ -6322,7 +6328,8 @@ components:
           "winc": 10000,
           "binc": 10000,
           "status": "resign",
-          "winner": "black"
+          "winner": "black",
+          "abortable": false
         }
       ]
 
