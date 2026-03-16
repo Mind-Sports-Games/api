@@ -1358,20 +1358,130 @@ paths:
                 startDate:
                   type: integer
                   description: Timestamp to start the tournament at a given date and time. Overrides the `waitMinutes` setting
+                'clock.delay':
+                  type: integer
+                  description: Clock delay in seconds. Used with `clock.useBronsteinDelay` or `clock.useSimpleDelay`.
+                  minimum: 0
+                  maximum: 120
+                'clock.byoyomi':
+                  type: integer
+                  description: Byoyomi period length in seconds. Used with `clock.useByoyomi`. Applies to Shogi and Go variants.
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 50
+                    - 60
+                'clock.periods':
+                  type: integer
+                  description: Number of byoyomi periods. Used with `clock.useByoyomi`.
+                  minimum: 0
+                  maximum: 5
+                'clock.useBronsteinDelay':
+                  type: boolean
+                  description: Use Bronstein delay clock instead of increment. Requires `clock.delay`.
+                'clock.useSimpleDelay':
+                  type: boolean
+                  description: Use simple delay clock instead of increment. Requires `clock.delay`.
+                'clock.useByoyomi':
+                  type: boolean
+                  description: Use byoyomi clock instead of increment. Requires `clock.byoyomi` and `clock.periods`.
                 variant:
                   type: string
-                  description: The variant to use in tournament games
+                  description: |
+                    The variant to use in tournament games. Encoded as `{GameFamilyId}_{VariantId}`.
+
+                    **Chess (family 0):** `0_1` Standard, `0_2` Chess960, `0_3` From Position, `0_4` King of the Hill,
+                    `0_5` Three-check, `0_6` Antichess, `0_7` Atomic, `0_8` Horde, `0_9` Racing Kings,
+                    `0_10` Crazyhouse, `0_12` Five-check, `0_13` No Castling, `0_15` Monster
+
+                    **Lines of Action (family 2):** `2_11` Lines Of Action, `2_14` Scrambled Eggs
+
+                    **Draughts (family 1):** `1_1` International, `1_6` Antidraughts, `1_8` Frysk!, `1_9` Breakthrough,
+                    `1_10` Frisian, `1_11` Russian, `1_12` Brazilian, `1_13` Pool, `1_14` Portuguese, `1_15` English
+
+                    **Shogi (family 3):** `3_1` Shogi, `3_5` Mini Shogi
+
+                    **Xiangqi (family 4):** `4_2` Xiangqi, `4_4` Mini Xiangqi
+
+                    **Flipello/Othello (family 5):** `5_6` Flipello, `5_7` Flipello10, `5_11` AntiFlipello, `5_12` Octagon Flipello
+
+                    **Oware (family 6):** `6_1` Oware
+
+                    **Togyzkumalak (family 7):** `7_1` Togyzkumalak, `7_2` Bestemshe
+
+                    **Amazons (family 8):** `8_8` Amazons
+
+                    **Go (family 9):** `9_1` Go 9x9, `9_2` Go 13x13, `9_4` Go 19x19
+
+                    **Backgammon (family 10):** `10_1` Backgammon, `10_2` Nackgammon, `10_4` Hyper
+
+                    **BreakthroughTroyka (family 11):** `11_9` Breakthrough Troyka, `11_10` Mini Breakthrough
+
+                    **Abalone (family 12):** `12_1` Abalone
+
+                    **Dameo (family 13):** `13_1` Dameo
+                  default: "0_1"
                   enum:
-                    - standard
-                    - chess960
-                    - crazyhouse
-                    - antichess
-                    - atomic
-                    - horde
-                    - kingOfTheHill
-                    - racingKings
-                    - threeCheck
-                  default: standard
+                    - "0_1"
+                    - "0_2"
+                    - "0_3"
+                    - "0_4"
+                    - "0_5"
+                    - "0_6"
+                    - "0_7"
+                    - "0_8"
+                    - "0_9"
+                    - "0_10"
+                    - "0_12"
+                    - "0_13"
+                    - "0_15"
+                    - "2_11"
+                    - "2_14"
+                    - "1_1"
+                    - "1_6"
+                    - "1_8"
+                    - "1_9"
+                    - "1_10"
+                    - "1_11"
+                    - "1_12"
+                    - "1_13"
+                    - "1_14"
+                    - "1_15"
+                    - "3_1"
+                    - "3_5"
+                    - "4_2"
+                    - "4_4"
+                    - "5_6"
+                    - "5_7"
+                    - "5_11"
+                    - "5_12"
+                    - "6_1"
+                    - "7_1"
+                    - "7_2"
+                    - "8_8"
+                    - "9_1"
+                    - "9_2"
+                    - "9_4"
+                    - "10_1"
+                    - "10_2"
+                    - "10_4"
+                    - "11_9"
+                    - "11_10"
+                    - "12_1"
+                    - "13_1"
                 rated:
                   type: boolean
                   description: Games are rated and impact players ratings
@@ -1387,10 +1497,10 @@ paths:
                   type: boolean
                   description: After 2 wins, consecutive wins grant 4 points instead of 2.
                   default: true
-                # "conditions.titled":
-                #   type: boolean
-                #   description: Whether to require a title to enter the tournament
-                #   default: false
+                statusScoring:
+                  type: boolean
+                  description: Count unfinished games in the score (using game status rather than waiting for completion).
+                  default: false
                 hasChat:
                   type: boolean
                   description: Whether the players can discuss in a chat
@@ -1419,12 +1529,137 @@ paths:
                 conditions.minRating.rating:
                   type: integer
                   description: Minimum rating to join. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                    - 2300
+                    - 2400
+                    - 2500
+                    - 2600
                 conditions.maxRating.rating:
                   type: integer
                   description: Maximum rating to join. Based on best rating reached in the last 7 days. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 800
+                    - 900
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
                 conditions.nbRatedGame.nb:
                   type: integer
                   description: Minimum number of rated games required to join.
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 30
+                    - 40
+                    - 50
+                    - 75
+                    - 100
+                    - 150
+                    - 200
+                conditions.titled:
+                  type: boolean
+                  description: Restrict entry to titled players only.
+                medley:
+                  type: boolean
+                  description: Enable medley mode, where the variant changes at set intervals during the tournament.
+                medleyIntervalOptions.medleyMinutes:
+                  type: integer
+                  description: Duration in minutes of each medley interval (how long each variant is played).
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 45
+                    - 60
+                medleyIntervalOptions.balanceIntervals:
+                  type: boolean
+                  description: Balance the interval durations based on clock limits.
+                medleyIntervalOptions.numIntervals:
+                  type: integer
+                  description: Number of different game variants to include in the medley.
+                  minimum: 2
+                medleyDefaults.onePerGameFamily:
+                  type: boolean
+                  description: When building the medley variant list, include at most one variant per game family.
+                medleyDefaults.exoticChessVariants:
+                  type: boolean
+                  description: When building the medley variant list, include exotic chess variants (Horde, Racing Kings, etc.).
+                medleyDefaults.draughts64Variants:
+                  type: boolean
+                  description: When building the medley variant list, include 64-square draughts variants (Russian, Brazilian, Pool, etc.).
+                medleyGameFamilies.chess:
+                  type: boolean
+                  description: Include Chess variants in the medley.
+                medleyGameFamilies.draughts:
+                  type: boolean
+                  description: Include Draughts variants in the medley.
+                medleyGameFamilies.shogi:
+                  type: boolean
+                  description: Include Shogi variants in the medley.
+                medleyGameFamilies.xiangqi:
+                  type: boolean
+                  description: Include Xiangqi variants in the medley.
+                medleyGameFamilies.loa:
+                  type: boolean
+                  description: Include Lines of Action variants in the medley.
+                medleyGameFamilies.flipello:
+                  type: boolean
+                  description: Include Flipello/Othello variants in the medley.
+                medleyGameFamilies.mancala:
+                  type: boolean
+                  description: Include Mancala variants (Oware, Togyzkumalak) in the medley.
+                medleyGameFamilies.amazons:
+                  type: boolean
+                  description: Include Amazons in the medley.
+                medleyGameFamilies.breakthroughtroyka:
+                  type: boolean
+                  description: Include BreakthroughTroyka variants in the medley.
+                medleyGameFamilies.go:
+                  type: boolean
+                  description: Include Go variants in the medley.
+                medleyGameFamilies.backgammon:
+                  type: boolean
+                  description: Include Backgammon variants in the medley.
+                medleyGameFamilies.abalone:
+                  type: boolean
+                  description: Include Abalone in the medley.
+                variantSettings.handicaps.handicapped:
+                  type: boolean
+                  description: Enable handicapped games. Only applicable to Go and Shogi tournaments.
+                variantSettings.handicaps.inputPlayerRatings:
+                  type: string
+                  description: |
+                    Custom player ratings used to calculate handicaps, one per line in the format `username rating`.
+                    Only applicable when `variantSettings.handicaps.handicapped` is true.
               required:
                 - clockTime
                 - clockIncrement
@@ -1564,20 +1799,130 @@ paths:
                 startDate:
                   type: integer
                   description: Timestamp to start the tournament at a given date and time. Overrides the `waitMinutes` setting
+                'clock.delay':
+                  type: integer
+                  description: Clock delay in seconds. Used with `clock.useBronsteinDelay` or `clock.useSimpleDelay`.
+                  minimum: 0
+                  maximum: 120
+                'clock.byoyomi':
+                  type: integer
+                  description: Byoyomi period length in seconds. Used with `clock.useByoyomi`. Applies to Shogi and Go variants.
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 50
+                    - 60
+                'clock.periods':
+                  type: integer
+                  description: Number of byoyomi periods. Used with `clock.useByoyomi`.
+                  minimum: 0
+                  maximum: 5
+                'clock.useBronsteinDelay':
+                  type: boolean
+                  description: Use Bronstein delay clock instead of increment. Requires `clock.delay`.
+                'clock.useSimpleDelay':
+                  type: boolean
+                  description: Use simple delay clock instead of increment. Requires `clock.delay`.
+                'clock.useByoyomi':
+                  type: boolean
+                  description: Use byoyomi clock instead of increment. Requires `clock.byoyomi` and `clock.periods`.
                 variant:
                   type: string
-                  description: The variant to use in tournament games
+                  description: |
+                    The variant to use in tournament games. Encoded as `{GameFamilyId}_{VariantId}`.
+
+                    **Chess (family 0):** `0_1` Standard, `0_2` Chess960, `0_3` From Position, `0_4` King of the Hill,
+                    `0_5` Three-check, `0_6` Antichess, `0_7` Atomic, `0_8` Horde, `0_9` Racing Kings,
+                    `0_10` Crazyhouse, `0_12` Five-check, `0_13` No Castling, `0_15` Monster
+
+                    **Lines of Action (family 2):** `2_11` Lines Of Action, `2_14` Scrambled Eggs
+
+                    **Draughts (family 1):** `1_1` International, `1_6` Antidraughts, `1_8` Frysk!, `1_9` Breakthrough,
+                    `1_10` Frisian, `1_11` Russian, `1_12` Brazilian, `1_13` Pool, `1_14` Portuguese, `1_15` English
+
+                    **Shogi (family 3):** `3_1` Shogi, `3_5` Mini Shogi
+
+                    **Xiangqi (family 4):** `4_2` Xiangqi, `4_4` Mini Xiangqi
+
+                    **Flipello/Othello (family 5):** `5_6` Flipello, `5_7` Flipello10, `5_11` AntiFlipello, `5_12` Octagon Flipello
+
+                    **Oware (family 6):** `6_1` Oware
+
+                    **Togyzkumalak (family 7):** `7_1` Togyzkumalak, `7_2` Bestemshe
+
+                    **Amazons (family 8):** `8_8` Amazons
+
+                    **Go (family 9):** `9_1` Go 9x9, `9_2` Go 13x13, `9_4` Go 19x19
+
+                    **Backgammon (family 10):** `10_1` Backgammon, `10_2` Nackgammon, `10_4` Hyper
+
+                    **BreakthroughTroyka (family 11):** `11_9` Breakthrough Troyka, `11_10` Mini Breakthrough
+
+                    **Abalone (family 12):** `12_1` Abalone
+
+                    **Dameo (family 13):** `13_1` Dameo
+                  default: "0_1"
                   enum:
-                    - standard
-                    - chess960
-                    - crazyhouse
-                    - antichess
-                    - atomic
-                    - horde
-                    - kingOfTheHill
-                    - racingKings
-                    - threeCheck
-                  default: standard
+                    - "0_1"
+                    - "0_2"
+                    - "0_3"
+                    - "0_4"
+                    - "0_5"
+                    - "0_6"
+                    - "0_7"
+                    - "0_8"
+                    - "0_9"
+                    - "0_10"
+                    - "0_12"
+                    - "0_13"
+                    - "0_15"
+                    - "2_11"
+                    - "2_14"
+                    - "1_1"
+                    - "1_6"
+                    - "1_8"
+                    - "1_9"
+                    - "1_10"
+                    - "1_11"
+                    - "1_12"
+                    - "1_13"
+                    - "1_14"
+                    - "1_15"
+                    - "3_1"
+                    - "3_5"
+                    - "4_2"
+                    - "4_4"
+                    - "5_6"
+                    - "5_7"
+                    - "5_11"
+                    - "5_12"
+                    - "6_1"
+                    - "7_1"
+                    - "7_2"
+                    - "8_8"
+                    - "9_1"
+                    - "9_2"
+                    - "9_4"
+                    - "10_1"
+                    - "10_2"
+                    - "10_4"
+                    - "11_9"
+                    - "11_10"
+                    - "12_1"
+                    - "13_1"
                 rated:
                   type: boolean
                   description: Games are rated and impact players ratings
@@ -1593,10 +1938,10 @@ paths:
                   type: boolean
                   description: After 2 wins, consecutive wins grant 4 points instead of 2.
                   default: true
-                # "conditions.titled":
-                #   type: boolean
-                #   description: Whether to require a title to enter the tournament
-                #   default: false
+                statusScoring:
+                  type: boolean
+                  description: Count unfinished games in the score (using game status rather than waiting for completion).
+                  default: false
                 hasChat:
                   type: boolean
                   description: Whether the players can discuss in a chat
@@ -1610,12 +1955,137 @@ paths:
                 conditions.minRating.rating:
                   type: integer
                   description: Minimum rating to join. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                    - 2300
+                    - 2400
+                    - 2500
+                    - 2600
                 conditions.maxRating.rating:
                   type: integer
                   description: Maximum rating to join. Based on best rating reached in the last 7 days. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 800
+                    - 900
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
                 conditions.nbRatedGame.nb:
                   type: integer
                   description: Minimum number of rated games required to join.
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 30
+                    - 40
+                    - 50
+                    - 75
+                    - 100
+                    - 150
+                    - 200
+                conditions.titled:
+                  type: boolean
+                  description: Restrict entry to titled players only.
+                medley:
+                  type: boolean
+                  description: Enable medley mode, where the variant changes at set intervals during the tournament.
+                medleyIntervalOptions.medleyMinutes:
+                  type: integer
+                  description: Duration in minutes of each medley interval (how long each variant is played).
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 45
+                    - 60
+                medleyIntervalOptions.balanceIntervals:
+                  type: boolean
+                  description: Balance the interval durations based on clock limits.
+                medleyIntervalOptions.numIntervals:
+                  type: integer
+                  description: Number of different game variants to include in the medley.
+                  minimum: 2
+                medleyDefaults.onePerGameFamily:
+                  type: boolean
+                  description: When building the medley variant list, include at most one variant per game family.
+                medleyDefaults.exoticChessVariants:
+                  type: boolean
+                  description: When building the medley variant list, include exotic chess variants (Horde, Racing Kings, etc.).
+                medleyDefaults.draughts64Variants:
+                  type: boolean
+                  description: When building the medley variant list, include 64-square draughts variants (Russian, Brazilian, Pool, etc.).
+                medleyGameFamilies.chess:
+                  type: boolean
+                  description: Include Chess variants in the medley.
+                medleyGameFamilies.draughts:
+                  type: boolean
+                  description: Include Draughts variants in the medley.
+                medleyGameFamilies.shogi:
+                  type: boolean
+                  description: Include Shogi variants in the medley.
+                medleyGameFamilies.xiangqi:
+                  type: boolean
+                  description: Include Xiangqi variants in the medley.
+                medleyGameFamilies.loa:
+                  type: boolean
+                  description: Include Lines of Action variants in the medley.
+                medleyGameFamilies.flipello:
+                  type: boolean
+                  description: Include Flipello/Othello variants in the medley.
+                medleyGameFamilies.mancala:
+                  type: boolean
+                  description: Include Mancala variants (Oware, Togyzkumalak) in the medley.
+                medleyGameFamilies.amazons:
+                  type: boolean
+                  description: Include Amazons in the medley.
+                medleyGameFamilies.breakthroughtroyka:
+                  type: boolean
+                  description: Include BreakthroughTroyka variants in the medley.
+                medleyGameFamilies.go:
+                  type: boolean
+                  description: Include Go variants in the medley.
+                medleyGameFamilies.backgammon:
+                  type: boolean
+                  description: Include Backgammon variants in the medley.
+                medleyGameFamilies.abalone:
+                  type: boolean
+                  description: Include Abalone in the medley.
+                variantSettings.handicaps.handicapped:
+                  type: boolean
+                  description: Enable handicapped games. Only applicable to Go and Shogi tournaments.
+                variantSettings.handicaps.inputPlayerRatings:
+                  type: string
+                  description: |
+                    Custom player ratings used to calculate handicaps, one per line in the format `username rating`.
+                    Only applicable when `variantSettings.handicaps.handicapped` is true.
               required:
                 - clockTime
                 - clockIncrement
@@ -1975,7 +2445,7 @@ paths:
       description: |
         Create a Swiss tournament for your team.
 
-        This endpoint mirrors the Swiss tournament form from your team pagee.
+        This endpoint mirrors the Swiss tournament form from your team page.
 
         You can create up to 12 tournaments per day.
       tags:
@@ -2026,24 +2496,134 @@ paths:
                   description: |
                     How long to wait between each round, in seconds.
 
-                    Set to 99999999 to manually schedule each round from the tournament UI.
+                    Allowed values: `5`, `10`, `20`, `30`, `45`, `60`, `120`, `180`, `300`, `600`, `900`, `1200`, `1800`, `2700`, `3600`, `86400` (1 day), `172800` (2 days), `604800` (1 week).
+
+                    Set to `99999999` to manually schedule each round from the tournament UI.
+                  default: 99999999
+                'clock.delay':
+                  type: integer
+                  description: Clock delay in seconds. Used with `clock.useBronsteinDelay` or `clock.useSimpleDelay`.
                   minimum: 0
-                  maximum: 86400
-                  default: auto
+                  maximum: 120
+                'clock.byoyomi':
+                  type: integer
+                  description: Byoyomi period length in seconds. Used with `clock.useByoyomi`. Applies to Shogi and Go variants.
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 50
+                    - 60
+                'clock.periods':
+                  type: integer
+                  description: Number of byoyomi periods. Used with `clock.useByoyomi`.
+                  minimum: 0
+                  maximum: 5
+                'clock.useBronsteinDelay':
+                  type: boolean
+                  description: Use Bronstein delay clock instead of increment. Requires `clock.delay`.
+                'clock.useSimpleDelay':
+                  type: boolean
+                  description: Use simple delay clock instead of increment. Requires `clock.delay`.
+                'clock.useByoyomi':
+                  type: boolean
+                  description: Use byoyomi clock instead of increment. Requires `clock.byoyomi` and `clock.periods`.
                 variant:
                   type: string
-                  description: The variant to use in tournament games
+                  description: |
+                    The variant to use in tournament games. Encoded as `{GameFamilyId}_{VariantId}`.
+
+                    **Chess (family 0):** `0_1` Standard, `0_2` Chess960, `0_3` From Position, `0_4` King of the Hill,
+                    `0_5` Three-check, `0_6` Antichess, `0_7` Atomic, `0_8` Horde, `0_9` Racing Kings,
+                    `0_10` Crazyhouse, `0_12` Five-check, `0_13` No Castling, `0_15` Monster
+
+                    **Lines of Action (family 2):** `2_11` Lines Of Action, `2_14` Scrambled Eggs
+
+                    **Draughts (family 1):** `1_1` International, `1_6` Antidraughts, `1_8` Frysk!, `1_9` Breakthrough,
+                    `1_10` Frisian, `1_11` Russian, `1_12` Brazilian, `1_13` Pool, `1_14` Portuguese, `1_15` English
+
+                    **Shogi (family 3):** `3_1` Shogi, `3_5` Mini Shogi
+
+                    **Xiangqi (family 4):** `4_2` Xiangqi, `4_4` Mini Xiangqi
+
+                    **Flipello/Othello (family 5):** `5_6` Flipello, `5_7` Flipello10, `5_11` AntiFlipello, `5_12` Octagon Flipello
+
+                    **Oware (family 6):** `6_1` Oware
+
+                    **Togyzkumalak (family 7):** `7_1` Togyzkumalak, `7_2` Bestemshe
+
+                    **Amazons (family 8):** `8_8` Amazons
+
+                    **Go (family 9):** `9_1` Go 9x9, `9_2` Go 13x13, `9_4` Go 19x19
+
+                    **Backgammon (family 10):** `10_1` Backgammon, `10_2` Nackgammon, `10_4` Hyper
+
+                    **BreakthroughTroyka (family 11):** `11_9` Breakthrough Troyka, `11_10` Mini Breakthrough
+
+                    **Abalone (family 12):** `12_1` Abalone
+
+                    **Dameo (family 13):** `13_1` Dameo
+                  default: "0_1"
                   enum:
-                    - standard
-                    - chess960
-                    - crazyhouse
-                    - antichess
-                    - atomic
-                    - horde
-                    - kingOfTheHill
-                    - racingKings
-                    - threeCheck
-                  default: standard
+                    - "0_1"
+                    - "0_2"
+                    - "0_3"
+                    - "0_4"
+                    - "0_5"
+                    - "0_6"
+                    - "0_7"
+                    - "0_8"
+                    - "0_9"
+                    - "0_10"
+                    - "0_12"
+                    - "0_13"
+                    - "0_15"
+                    - "2_11"
+                    - "2_14"
+                    - "1_1"
+                    - "1_6"
+                    - "1_8"
+                    - "1_9"
+                    - "1_10"
+                    - "1_11"
+                    - "1_12"
+                    - "1_13"
+                    - "1_14"
+                    - "1_15"
+                    - "3_1"
+                    - "3_5"
+                    - "4_2"
+                    - "4_4"
+                    - "5_6"
+                    - "5_7"
+                    - "5_11"
+                    - "5_12"
+                    - "6_1"
+                    - "7_1"
+                    - "7_2"
+                    - "8_8"
+                    - "9_1"
+                    - "9_2"
+                    - "9_4"
+                    - "10_1"
+                    - "10_2"
+                    - "10_4"
+                    - "11_9"
+                    - "11_10"
+                    - "12_1"
+                    - "13_1"
                 description:
                   type: string
                   description: Anything you want to tell players about the tournament
@@ -2051,6 +2631,9 @@ paths:
                   type: boolean
                   description: Games are rated and impact players ratings
                   default: true
+                password:
+                  type: string
+                  description: Make the tournament private, and restrict access with a password
                 chatFor:
                   type: number
                   description: |
@@ -2060,6 +2643,186 @@ paths:
                     - 20 = Only team members
                     - 30 = All Play Strategy players
                   default: 20
+                conditions.minRating.rating:
+                  type: integer
+                  description: Minimum rating to join. Leave empty to let everyone join.
+                  enum:
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                    - 2300
+                    - 2400
+                    - 2500
+                    - 2600
+                conditions.maxRating.rating:
+                  type: integer
+                  description: Maximum rating to join. Leave empty to let everyone join.
+                  enum:
+                    - 800
+                    - 900
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                conditions.nbRatedGame.nb:
+                  type: integer
+                  description: Minimum number of rated games required to join.
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 30
+                    - 40
+                    - 50
+                    - 75
+                    - 100
+                    - 150
+                    - 200
+                conditions.titled:
+                  type: boolean
+                  description: Restrict entry to titled players only.
+                forbiddenPairings:
+                  type: string
+                  description: |
+                    Usernames of players that must not be paired together. One user pair per line, separated by a space.
+                    Example: `playerA playerB`
+                minutesBeforeStartToJoin:
+                  type: integer
+                  description: |
+                    How many minutes before the start time players are no longer allowed to join.
+                    Set to 0 for no restriction.
+                  enum:
+                    - 0
+                    - 15
+                    - 30
+                    - 60
+                    - 120
+                    - 360
+                    - 720
+                    - 1440
+                    - 2880
+                    - 10080
+                halfwayBreak:
+                  type: integer
+                  description: |
+                    Duration in seconds of a break inserted after the halfway round.
+                    Set to 0 for no break.
+                  enum:
+                    - 0
+                    - 30
+                    - 60
+                    - 120
+                    - 300
+                    - 600
+                    - 1200
+                    - 1800
+                    - 2700
+                    - 3600
+                    - 7200
+                medley:
+                  type: boolean
+                  description: Enable medley mode, where each round uses a different game variant.
+                medleyDefaults.onePerGameFamily:
+                  type: boolean
+                  description: When building the medley variant list, include at most one variant per game family.
+                medleyDefaults.exoticChessVariants:
+                  type: boolean
+                  description: When building the medley variant list, include exotic chess variants (Horde, Racing Kings, etc.).
+                medleyDefaults.draughts64Variants:
+                  type: boolean
+                  description: When building the medley variant list, include 64-square draughts variants (Russian, Brazilian, Pool, etc.).
+                medleyGameFamilies.chess:
+                  type: boolean
+                  description: Include Chess variants in the medley.
+                medleyGameFamilies.draughts:
+                  type: boolean
+                  description: Include Draughts variants in the medley.
+                medleyGameFamilies.shogi:
+                  type: boolean
+                  description: Include Shogi variants in the medley.
+                medleyGameFamilies.xiangqi:
+                  type: boolean
+                  description: Include Xiangqi variants in the medley.
+                medleyGameFamilies.loa:
+                  type: boolean
+                  description: Include Lines of Action variants in the medley.
+                medleyGameFamilies.flipello:
+                  type: boolean
+                  description: Include Flipello/Othello variants in the medley.
+                medleyGameFamilies.mancala:
+                  type: boolean
+                  description: Include Mancala variants (Oware, Togyzkumalak) in the medley.
+                medleyGameFamilies.amazons:
+                  type: boolean
+                  description: Include Amazons in the medley.
+                medleyGameFamilies.breakthroughtroyka:
+                  type: boolean
+                  description: Include BreakthroughTroyka variants in the medley.
+                medleyGameFamilies.go:
+                  type: boolean
+                  description: Include Go variants in the medley.
+                medleyGameFamilies.backgammon:
+                  type: boolean
+                  description: Include Backgammon variants in the medley.
+                medleyGameFamilies.abalone:
+                  type: boolean
+                  description: Include Abalone in the medley.
+                mcmahon:
+                  type: boolean
+                  description: Enable McMahon pairing system. Only applicable to Go tournaments.
+                mcmahonCutoff:
+                  type: string
+                  description: Grade cutoff for the McMahon pairing system (e.g. `10k`, `1d`). Only applicable when `mcmahon` is true.
+                variantSettings.handicaps.handicapped:
+                  type: boolean
+                  description: Enable handicapped games. Only applicable to Go and Shogi tournaments.
+                variantSettings.handicaps.inputPlayerRatings:
+                  type: string
+                  description: |
+                    Custom player ratings used to calculate handicaps, one per line in the format `username rating`.
+                    Only applicable when `variantSettings.handicaps.handicapped` is true.
+                variantSettings.backgammonPoints:
+                  type: integer
+                  description: Points target for backgammon match play (e.g. 3, 5, 7). Only applicable to Backgammon tournaments.
+                'xGamesChoice.bestOfX':
+                  type: boolean
+                  description: Each round is a best-of-X match. Requires `xGamesChoice.nbGamesPerRound`.
+                'xGamesChoice.playX':
+                  type: boolean
+                  description: Each round plays exactly X games regardless of result. Requires `xGamesChoice.nbGamesPerRound`.
+                'xGamesChoice.matchScore':
+                  type: boolean
+                  description: Use cumulative match score across games in a round.
+                'xGamesChoice.nbGamesPerRound':
+                  type: integer
+                  description: Number of games per round, used with `xGamesChoice.bestOfX` or `xGamesChoice.playX`.
+                  minimum: 1
+                'drawTables.drawTables':
+                  type: boolean
+                  description: Enable draw tables for the tournament.
+                'drawTables.perPairingDrawTables':
+                  type: boolean
+                  description: Use per-pairing draw tables rather than a single shared draw table.
               required:
                 - 'clock.limit'
                 - 'clock.increment'
@@ -6053,7 +6816,7 @@ components:
         "round": 0,
         "startsAt": "2020-05-11T12:23:18.233-06:00",
         "status": "created",
-        "variant": "standard"
+        "variant": "0_1"
       }
 
     Simul:
