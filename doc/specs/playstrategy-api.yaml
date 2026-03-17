@@ -4,7 +4,7 @@ info:
   title: playstrategy.org API reference
   x-logo:
     url: https://assets.playstrategy.org/assets/_2402ey/logo/playstrategy.svg
-    backgroundColor: #ffffff
+    backgroundColor: "#ffffff"
   description: "\n\n# Introduction\nWelcome to the reference for the Play Strategy API! Play Strategy is free/libre, open-source chess server powered by volunteers and donations.\n\n\
   \ - [Contribute to this documentation on Github](https://github.com/Mind-Sports-Games/api).\n\
   \ - Check out [Play Strategy widgets to embed in your website](https://playstrategy.org/developers).\n\
@@ -113,13 +113,13 @@ tags:
   description: |
     Private messages with other players.
     https://playstrategy.org/inbox
-- name: Broadcasts
-  description: |
-    Relay chess events on Play Strategy.
-    [Official broadcasts](https://playstrategy.org/broadcast) are maintained by Play Strategy,
-    but you can [create your own broadcasts](https://playstrategy.org/broadcast/new) to cover any live game or chess event.
-    You will need to publish PGN on a public URL so that Play Strategy can pull updates from it.
-    Alternatively, you can push PGN updates to Play Strategy using this API.
+# - name: Broadcasts
+#   description: |
+#     Relay chess events on Play Strategy.
+#     [Official broadcasts](https://playstrategy.org/broadcast) are maintained by Play Strategy,
+#     but you can [create your own broadcasts](https://playstrategy.org/broadcast/new) to cover any live game or chess event.
+#     You will need to publish PGN on a public URL so that Play Strategy can pull updates from it.
+#     Alternatively, you can push PGN updates to Play Strategy using this API.
 - name: Analysis
   description: |
     Access Play Strategy cloud evaluations database.
@@ -366,6 +366,55 @@ paths:
               example:
                 https://gist.github.com/ornicar/0ee2d2427cb74ed1a35e86f5ba09fabc
 
+  /api/user/{username}/note:
+    post:
+      operationId: apiUserNoteCreate
+      summary: Create a note for a user
+      description: |
+        Create a private note about a user.
+        Moderator notes require the `ModNote` permission on the authenticated account.
+      tags:
+        - Users
+        - OAuth
+      security:
+        - OAuth2: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: The username of the user to write a note about.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: The note text.
+                mod:
+                  type: boolean
+                  description: |
+                    Mark this as a moderator note.
+                    Requires the `ModNote` permission on the authenticated account.
+              required:
+                - text
+      responses:
+        200:
+          description: The note was created.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+
   /api/puzzle/daily:
     get:
       operationId: apiPuzzleDaily
@@ -425,6 +474,41 @@ paths:
             application/x-ndjson:
               schema:
                 $ref: '#/components/schemas/PuzzleRoundJson'
+
+  /api/puzzle/dashboard/{days}:
+    get:
+      operationId: apiPuzzleDashboard
+      summary: Get your puzzle dashboard
+      description: |
+        Download your puzzle dashboard in JSON format.
+        Aggregates puzzle results over the given number of days.
+      tags:
+        - Puzzles
+        - OAuth
+      security:
+        - OAuth2: ["puzzle:read"]
+      parameters:
+        - in: path
+          name: days
+          required: true
+          description: How many days to look back when aggregating puzzle results.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 365
+            default: 30
+      responses:
+        200:
+          description: The puzzle dashboard of the logged in user.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PuzzleDashboardJson'
 
   /api/users:
     post:
@@ -714,6 +798,21 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        200:
+          description: The games of the multimatch.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/x-chess-pgn:
+              schema:
+                $ref: '#/components/schemas/GamePgn'
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/GameJson'
 
   /api/user/{username}/current-game:
     get:
@@ -984,6 +1083,102 @@ paths:
               schema:
                 $ref: '#/components/schemas/GameJson'
 
+  /api/games/variant/{variant}:
+    get:
+      operationId: apiGamesVariant
+      summary: Export games by variant
+      description: |
+        Download all games of a specific variant in PGN or [ndjson](http://ndjson.org/) format.
+
+        Requires the private `PrivateApi:DbExport` OAuth scope, which is only available to internal/authorized users.
+
+        Games are sorted by reverse chronological order (most recent first).
+
+        We recommend streaming the response, for it can be very long.
+      tags:
+        - Games
+        - OAuth
+      security:
+        - OAuth2: ["api:db-export"]
+      parameters:
+        - in: path
+          name: variant
+          required: true
+          description: The game variant key (e.g. chess, draughts, shogi, xiangqi).
+          schema:
+            type: string
+        - in: query
+          name: since
+          description: Download games played since this timestamp.
+          schema:
+            type: integer
+            minimum: 1356998400070
+            default: Account creation date
+        - in: query
+          name: until
+          description: Download games played until this timestamp.
+          schema:
+            type: integer
+            minimum: 1356998400070
+            default: Now
+        - in: query
+          name: analysed
+          description: "[Filter] Only games with or without a computer analysis available"
+          schema:
+            type: boolean
+            default: null
+        - in: query
+          name: moves
+          description: Include the PGN moves.
+          schema:
+            type: boolean
+            default: true
+        - in: query
+          name: tags
+          description: Include the PGN tags.
+          schema:
+            type: boolean
+            default: true
+        - in: query
+          name: clocks
+          description: |
+            Include clock comments in the PGN moves, when available.
+
+            Example: `2. exd5 { [%clk 1:01:27] } e5 { [%clk 1:01:28] }`
+          schema:
+            type: boolean
+            default: false
+        - in: query
+          name: evals
+          description: |
+            Include analysis evaluation comments in the PGN, when available.
+
+            Example: `12. Bxf6 { [%eval 0.23] } a3 { [%eval -1.09] }`
+          schema:
+            type: boolean
+            default: false
+        - in: query
+          name: opening
+          description: Include the opening name.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          description: The games of the requested variant.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/x-chess-pgn:
+              schema:
+                $ref: '#/components/schemas/GamePgn'
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/GameJson'
+
   /games/export/_ids:
     post:
       operationId: gamesExportIds
@@ -1208,6 +1403,14 @@ paths:
       tags:
         - Games
       security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The game ID (8 characters).
+          schema:
+            type: string
+            example: "5IrD6Gzz"
       responses:
         200:
           description: The stream of the game moves.
@@ -3243,297 +3446,297 @@ paths:
               schema:
                 $ref: '#/components/schemas/StudyPgn'
 
-  /api/broadcast:
-    get:
-      operationId: broadcastIndex
-      summary: Get official broadcasts
-      description: |
-        Get all incoming, ongoing, and finished official broadcasts.
-        The broadcasts are sorted by start date, most recent first.
-
-        **Broadcasts are streamed as [ndjson](http://ndjson.org/)**, i.e. one JSON object per line.
-      tags:
-        - Broadcasts
-      parameters:
-        - in: query
-          name: nb
-          description: Max number of broadcasts to fetch
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-      responses:
-        200:
-          description: The list of official broadcasts.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Broadcast'
-  /broadcast/new:
-    post:
-      operationId: broadcastCreate
-      summary: Create a broadcast
-      description: |
-        Create a new broadcast to relay external games.
-        This endpoint accepts the same form data as the [web form](https://playstrategy.org/broadcast/new).
-      tags:
-        - Broadcasts
-        - OAuth
-      security:
-        - OAuth2: ["study:write"]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: |
-                    Name of the broadcast. Length must be between 3 and 80 characters.
-
-                    Example: `Sinquefield Cup - Round 10`
-                description:
-                  type: string
-                  description: |
-                    Short description of the broadcast. Length must be between 3 and 400 characters.
-
-                    Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
-                syncUrl:
-                  type: string
-                  description: |
-                    URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
-
-                    Example: `http://myserver.org/myevent/round-10/games.pgn`
-
-                    If the syncUrl is missing, then the broadcast needs to be fed by [pushing PGN to it](#operation/broadcastPush).
-                markdown:
-                  type: string
-                  description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
-                credit:
-                  type: string
-                  description: Optional short text to give credit to the source provider.
-                startsAt:
-                  type: integer
-                  description: |
-                    Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
-
-                    Example: `1356998400070`
-                  minimum: 1356998400070
-                official:
-                  type: boolean
-                  description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
-                throttle:
-                  type: integer
-                  description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will [display ads on your broadcast](https://i.imgur.com/B47wT5P.jpg).
-              required:
-                - name
-                - description
-      responses:
-        200:
-          description: The broadcast was successfully created.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Broadcast'
-        400:
-          description: The creation of the broadcast failed.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /broadcast/{slug}/{broadcastId}:
-    get:
-      operationId: broadcastGet
-      summary: Get your broadcast
-      description: |
-        Get information about a broadcast that you created.
-        You will need it if you want to update that broadcast.
-      tags:
-        - Broadcasts
-        - OAuth
-      security:
-        - OAuth2: ["study:read"]
-      parameters:
-        - in: path
-          name: slug
-          description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
-          required: true
-          schema:
-            type: string
-            default: "-"
-        - in: path
-          name: broadcastId
-          description: The broadcast ID (8 characters).
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: The information about the broadcast.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Broadcast'
-
-  /broadcast/{slug}/{broadcastId}/edit:
-      post:
-        operationId: broadcastUpdate
-        summary: Update your broadcast
-        description: |
-          Update information about a broadcast that you created.
-          This endpoint accepts the same form data as the web form.
-          All fields must be populated with data. Missing fields will override the broadcast with empty data.
-          For instance, if you omit `startDate`, then any pre-existing start date will be removed.
-        tags:
-          - Broadcasts
-          - OAuth
-        security:
-          - OAuth2: ["study:write"]
-        parameters:
-          - in: path
-            name: slug
-            description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
-            required: true
-            schema:
-              type: string
-              default: "-"
-          - in: path
-            name: broadcastId
-            description: The broadcast ID (8 characters).
-            required: true
-            schema:
-              type: string
-        requestBody:
-          required: true
-          content:
-            application/x-www-form-urlencoded:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: |
-                      Name of the broadcast. Length must be between 3 and 80 characters.
-
-                      Example: `Sinquefield Cup - Round 10`
-                  description:
-                    type: string
-                    description: |
-                      Short description of the broadcast. Length must be between 3 and 400 characters.
-
-                      Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
-                  syncUrl:
-                    type: string
-                    description: |
-                      URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
-
-                      Example: `http://myserver.org/myevent/round-10/games.pgn`
-                  markdown:
-                    type: string
-                    description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
-                  credit:
-                    type: string
-                    description: Optional short text to give credit to the source provider.
-                  startsAt:
-                    type: integer
-                    description: |
-                      Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
-
-                      Example: `1356998400070`
-                    minimum: 1356998400070
-                  official:
-                    type: boolean
-                    description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
-                  throttle:
-                    type: integer
-                    description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will display ads on your broadcast.
-                required:
-                  - name
-                  - description
-        responses:
-          200:
-            description: The broadcast was successfully edited.
-            headers:
-              Access-Control-Allow-Origin:
-                schema:
-                  type: string
-                  default: "'*'"
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Broadcast'
-          400:
-            description: The edition of the broadcast failed.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Error'
-
-  /broadcast/{slug}/{broadcastId}/push:
-    post:
-      operationId: broadcastPush
-      summary: Push PGN to your broadcast
-      description: |
-        Update your broadcast with new PGN.
-        Only for broadcast without a source URL.
-      tags:
-        - Broadcasts
-        - OAuth
-      security:
-        - OAuth2: ["study:write"]
-      parameters:
-        - in: path
-          name: slug
-          description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
-          required: true
-          schema:
-            type: string
-            default: "-"
-        - in: path
-          name: broadcastId
-          description: The broadcast ID (8 characters).
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The PGN. It can contain up to 64 games, separated by a double new line.
-        required: true
-        content:
-          text/plain:
-            schema:
-              type: string
-      responses:
-        200:
-          description: The broadcast was successfully updated.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Ok'
-
+#   /api/broadcast:
+#     get:
+#       operationId: broadcastIndex
+#       summary: Get official broadcasts
+#       description: |
+#         Get all incoming, ongoing, and finished official broadcasts.
+#         The broadcasts are sorted by start date, most recent first.
+#
+#         **Broadcasts are streamed as [ndjson](http://ndjson.org/)**, i.e. one JSON object per line.
+#       tags:
+#         - Broadcasts
+#       parameters:
+#         - in: query
+#           name: nb
+#           description: Max number of broadcasts to fetch
+#           schema:
+#             type: integer
+#             default: 20
+#             minimum: 1
+#       responses:
+#         200:
+#           description: The list of official broadcasts.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: '#/components/schemas/Broadcast'
+#   /broadcast/new:
+#     post:
+#       operationId: broadcastCreate
+#       summary: Create a broadcast
+#       description: |
+#         Create a new broadcast to relay external games.
+#         This endpoint accepts the same form data as the [web form](https://playstrategy.org/broadcast/new).
+#       tags:
+#         - Broadcasts
+#         - OAuth
+#       security:
+#         - OAuth2: ["study:write"]
+#       requestBody:
+#         required: true
+#         content:
+#           application/x-www-form-urlencoded:
+#             schema:
+#               type: object
+#               properties:
+#                 name:
+#                   type: string
+#                   description: |
+#                     Name of the broadcast. Length must be between 3 and 80 characters.
+#
+#                     Example: `Sinquefield Cup - Round 10`
+#                 description:
+#                   type: string
+#                   description: |
+#                     Short description of the broadcast. Length must be between 3 and 400 characters.
+#
+#                     Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
+#                 syncUrl:
+#                   type: string
+#                   description: |
+#                     URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
+#
+#                     Example: `http://myserver.org/myevent/round-10/games.pgn`
+#
+#                     If the syncUrl is missing, then the broadcast needs to be fed by [pushing PGN to it](#operation/broadcastPush).
+#                 markdown:
+#                   type: string
+#                   description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
+#                 credit:
+#                   type: string
+#                   description: Optional short text to give credit to the source provider.
+#                 startsAt:
+#                   type: integer
+#                   description: |
+#                     Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
+#
+#                     Example: `1356998400070`
+#                   minimum: 1356998400070
+#                 official:
+#                   type: boolean
+#                   description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
+#                 throttle:
+#                   type: integer
+#                   description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will [display ads on your broadcast](https://i.imgur.com/B47wT5P.jpg).
+#               required:
+#                 - name
+#                 - description
+#       responses:
+#         200:
+#           description: The broadcast was successfully created.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/Broadcast'
+#         400:
+#           description: The creation of the broadcast failed.
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/Error'
+#
+#   /broadcast/{slug}/{broadcastId}:
+#     get:
+#       operationId: broadcastGet
+#       summary: Get your broadcast
+#       description: |
+#         Get information about a broadcast that you created.
+#         You will need it if you want to update that broadcast.
+#       tags:
+#         - Broadcasts
+#         - OAuth
+#       security:
+#         - OAuth2: ["study:read"]
+#       parameters:
+#         - in: path
+#           name: slug
+#           description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
+#           required: true
+#           schema:
+#             type: string
+#             default: "-"
+#         - in: path
+#           name: broadcastId
+#           description: The broadcast ID (8 characters).
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         200:
+#           description: The information about the broadcast.
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: '#/components/schemas/Broadcast'
+#
+#   /broadcast/{slug}/{broadcastId}/edit:
+#       post:
+#         operationId: broadcastUpdate
+#         summary: Update your broadcast
+#         description: |
+#           Update information about a broadcast that you created.
+#           This endpoint accepts the same form data as the web form.
+#           All fields must be populated with data. Missing fields will override the broadcast with empty data.
+#           For instance, if you omit `startDate`, then any pre-existing start date will be removed.
+#         tags:
+#           - Broadcasts
+#           - OAuth
+#         security:
+#           - OAuth2: ["study:write"]
+#         parameters:
+#           - in: path
+#             name: slug
+#             description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
+#             required: true
+#             schema:
+#               type: string
+#               default: "-"
+#           - in: path
+#             name: broadcastId
+#             description: The broadcast ID (8 characters).
+#             required: true
+#             schema:
+#               type: string
+#         requestBody:
+#           required: true
+#           content:
+#             application/x-www-form-urlencoded:
+#               schema:
+#                 type: object
+#                 properties:
+#                   name:
+#                     type: string
+#                     description: |
+#                       Name of the broadcast. Length must be between 3 and 80 characters.
+#
+#                       Example: `Sinquefield Cup - Round 10`
+#                   description:
+#                     type: string
+#                     description: |
+#                       Short description of the broadcast. Length must be between 3 and 400 characters.
+#
+#                       Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
+#                   syncUrl:
+#                     type: string
+#                     description: |
+#                       URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
+#
+#                       Example: `http://myserver.org/myevent/round-10/games.pgn`
+#                   markdown:
+#                     type: string
+#                     description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
+#                   credit:
+#                     type: string
+#                     description: Optional short text to give credit to the source provider.
+#                   startsAt:
+#                     type: integer
+#                     description: |
+#                       Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
+#
+#                       Example: `1356998400070`
+#                     minimum: 1356998400070
+#                   official:
+#                     type: boolean
+#                     description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
+#                   throttle:
+#                     type: integer
+#                     description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will display ads on your broadcast.
+#                 required:
+#                   - name
+#                   - description
+#         responses:
+#           200:
+#             description: The broadcast was successfully edited.
+#             headers:
+#               Access-Control-Allow-Origin:
+#                 schema:
+#                   type: string
+#                   default: "'*'"
+#             content:
+#               application/json:
+#                 schema:
+#                   $ref: '#/components/schemas/Broadcast'
+#           400:
+#             description: The edition of the broadcast failed.
+#             content:
+#               application/json:
+#                 schema:
+#                   $ref: '#/components/schemas/Error'
+#
+#   /broadcast/{slug}/{broadcastId}/push:
+#     post:
+#       operationId: broadcastPush
+#       summary: Push PGN to your broadcast
+#       description: |
+#         Update your broadcast with new PGN.
+#         Only for broadcast without a source URL.
+#       tags:
+#         - Broadcasts
+#         - OAuth
+#       security:
+#         - OAuth2: ["study:write"]
+#       parameters:
+#         - in: path
+#           name: slug
+#           description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
+#           required: true
+#           schema:
+#             type: string
+#             default: "-"
+#         - in: path
+#           name: broadcastId
+#           description: The broadcast ID (8 characters).
+#           required: true
+#           schema:
+#             type: string
+#       requestBody:
+#         description: The PGN. It can contain up to 64 games, separated by a double new line.
+#         required: true
+#         content:
+#           text/plain:
+#             schema:
+#               type: string
+#       responses:
+#         200:
+#           description: The broadcast was successfully updated.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: '#/components/schemas/Ok'
+#
   /api/simul:
     get:
       operationId: apiSimul
@@ -4494,6 +4697,96 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/board/game/{gameId}/decide-select-squares/{accept}:
+    post:
+      operationId: boardGameDecideSelectSquares
+      summary: Accept or decline a select-squares request
+      description: |
+        Accept or decline a select-squares request in a game being played with the Board API.
+        This is used in variants that require selecting squares (e.g. Go dead stone selection).
+        - `yes`: Accept the select-squares proposal.
+        - `no`: Decline the select-squares proposal.
+      tags:
+        - Board
+      security:
+        - OAuth2: ["board:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: accept
+          schema:
+            type: boolean
+            example: "yes"
+          required: true
+      responses:
+        200:
+          description: The select-squares decision was successfully sent.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/board/game/{gameId}/select-squares/{squares}:
+    post:
+      operationId: boardGameSelectSquares
+      summary: Select squares in a game
+      description: |
+        Select squares in a game being played with the Board API.
+        Used in variants that require selecting squares (e.g. Go dead stone selection).
+        Pass an empty `squares` parameter to submit an empty selection.
+      tags:
+        - Board
+      security:
+        - OAuth2: ["board:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: squares
+          required: true
+          description: Comma-separated list of square keys to select (e.g. `e2,e4`). Pass empty string for no selection.
+          schema:
+            type: string
+            example: "e2,e4"
+      responses:
+        200:
+          description: The squares were successfully selected.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/bot/account/upgrade:
     post:
       operationId: botAccountUpgrade
@@ -4750,6 +5043,140 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/bot/game/{gameId}/draw/{accept}:
+    post:
+      operationId: botGameDraw
+      summary: Handle draw offers
+      description: |
+        Create/accept/decline draw offers in a game being played with the Bot API.
+        - `yes`: Offer a draw, or accept the opponent's draw offer.
+        - `no`: Decline a draw offer from the opponent.
+      tags:
+        - Bot
+      security:
+        - OAuth2: ["bot:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: accept
+          schema:
+            type: boolean
+            example: "yes"
+          required: true
+      responses:
+        200:
+          description: The draw offer was successfully sent.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: Sending the draw offer failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bot/game/{gameId}/decide-select-squares/{accept}:
+    post:
+      operationId: botGameDecideSelectSquares
+      summary: Accept or decline a select-squares request
+      description: |
+        Accept or decline a select-squares request in a game being played with the Bot API.
+        This is used in variants that require selecting squares (e.g. Go dead stone selection).
+        - `yes`: Accept the select-squares proposal.
+        - `no`: Decline the select-squares proposal.
+      tags:
+        - Bot
+      security:
+        - OAuth2: ["bot:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: accept
+          schema:
+            type: boolean
+            example: "yes"
+          required: true
+      responses:
+        200:
+          description: The select-squares decision was successfully sent.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bot/game/{gameId}/select-squares/{squares}:
+    post:
+      operationId: botGameSelectSquares
+      summary: Select squares in a game
+      description: |
+        Select squares in a game being played with the Bot API.
+        Used in variants that require selecting squares (e.g. Go dead stone selection).
+        Pass an empty `squares` parameter to submit an empty selection.
+      tags:
+        - Bot
+      security:
+        - OAuth2: ["bot:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: squares
+          required: true
+          description: Comma-separated list of square keys to select (e.g. `e2,e4`). Pass empty string for no selection.
+          schema:
+            type: string
+            example: "e2,e4"
+      responses:
+        200:
+          description: The squares were successfully selected.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/challenge/{username}:
     post:
       operationId: challengeCreate
@@ -4848,6 +5275,17 @@ paths:
                     You can omit this field to send the default message,
                     but if you set your own message, it must at least contain the `{game}` placeholder.
                   default: "Your game with {opponent} is ready: {game}."
+                multiMatch:
+                  type: integer
+                  description: |
+                    Create a multi-match series of games.
+                    The value is the number of games in the match.
+                  minimum: 2
+                backgammonPoints:
+                  type: integer
+                  description: |
+                    Number of points to play to, for Backgammon variants.
+                  minimum: 1
       responses:
         200:
           description: The challenge was successfully created.
@@ -5098,7 +5536,7 @@ paths:
 
         Share the URL of the challenge. the first 2 players to click it will be paired for a game.
 
-        The response body also contains `p1Url` and `p2Url`.
+        The response body also contains `urlP1` and `urlP2`.
         You can control the starting player by giving players the specific URLs,
         instead of the main challenge URL.
 
@@ -5153,6 +5591,11 @@ paths:
                 name:
                   type: string
                   description: Optional name for the challenge, that players will see on the challenge page.
+                backgammonPoints:
+                  type: integer
+                  description: |
+                    Number of points to play to, for Backgammon variants.
+                  minimum: 1
       responses:
         200:
           description: The challenge was successfully created.
@@ -5755,8 +6198,8 @@ components:
       example: {
         "id": "VU0nyvsW",
         "url": "https://playstrategy.org/VU0nyvsW",
-        "urlp1": "https://playstrategy.org/VU0nyvsW?playerIndex=p1",
-        "urlp2": "https://playstrategy.org/VU0nyvsW?playerIndex=p2",
+        "urlP1": "https://playstrategy.org/VU0nyvsW?playerIndex=p1",
+        "urlP2": "https://playstrategy.org/VU0nyvsW?playerIndex=p2",
         "playerIndex": "random",
         "direction": "out",
         "timeControl": {
