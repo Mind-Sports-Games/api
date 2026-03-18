@@ -4,7 +4,7 @@ info:
   title: playstrategy.org API reference
   x-logo:
     url: https://assets.playstrategy.org/assets/_2402ey/logo/playstrategy.svg
-    backgroundColor: #ffffff
+    backgroundColor: "#ffffff"
   description: "\n\n# Introduction\nWelcome to the reference for the Play Strategy API! Play Strategy is free/libre, open-source chess server powered by volunteers and donations.\n\n\
   \ - [Contribute to this documentation on Github](https://github.com/Mind-Sports-Games/api).\n\
   \ - Check out [Play Strategy widgets to embed in your website](https://playstrategy.org/developers).\n\
@@ -113,13 +113,13 @@ tags:
   description: |
     Private messages with other players.
     https://playstrategy.org/inbox
-- name: Broadcasts
-  description: |
-    Relay chess events on Play Strategy.
-    [Official broadcasts](https://playstrategy.org/broadcast) are maintained by Play Strategy,
-    but you can [create your own broadcasts](https://playstrategy.org/broadcast/new) to cover any live game or chess event.
-    You will need to publish PGN on a public URL so that Play Strategy can pull updates from it.
-    Alternatively, you can push PGN updates to Play Strategy using this API.
+# - name: Broadcasts
+#   description: |
+#     Relay chess events on Play Strategy.
+#     [Official broadcasts](https://playstrategy.org/broadcast) are maintained by Play Strategy,
+#     but you can [create your own broadcasts](https://playstrategy.org/broadcast/new) to cover any live game or chess event.
+#     You will need to publish PGN on a public URL so that Play Strategy can pull updates from it.
+#     Alternatively, you can push PGN updates to Play Strategy using this API.
 - name: Analysis
   description: |
     Access Play Strategy cloud evaluations database.
@@ -265,6 +265,43 @@ paths:
               - kingOfTheHill
               - racingKings
               - threeCheck
+              - fiveCheck
+              - noCastling
+              - monster
+              - linesOfAction
+              - scrambledEggs
+              - international
+              - antidraughts
+              - breakthrough
+              - pool
+              - frisian
+              - frysk
+              - russian
+              - spanish
+              - brazilian
+              - english
+              - dameo
+              - shogi
+              - xiangqi
+              - minishogi
+              - minixiangqi
+              - flipello
+              - flipello10
+              - antiFlipello
+              - octagonFlipello
+              - amazons
+              - breakthroughTroyka
+              - miniBreakthroughTroyka
+              - togyzkumalak
+              - bestemshe
+              - oware
+              - go9x9
+              - go13x13
+              - go19x19
+              - backgammon
+              - nackgammon
+              - hyper
+              - abalone
           required: true
       responses:
         200:
@@ -366,65 +403,149 @@ paths:
               example:
                 https://gist.github.com/ornicar/0ee2d2427cb74ed1a35e86f5ba09fabc
 
-#   /api/puzzle/daily:
-#     get:
-#       operationId: apiPuzzleDaily
-#       summary: Get the daily puzzle
-#       description: |
-#         Get the daily Play Strategy puzzle in JSON format.
+  /api/user/{username}/note:
+    post:
+      operationId: apiUserNoteCreate
+      summary: Create a note for a user
+      description: |
+        Create a private note about a user.
+        Moderator notes require the `ModNote` permission on the authenticated account.
+      tags:
+        - Users
+        - OAuth
+      security:
+        - OAuth2: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: The username of the user to write a note about.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: The note text.
+                mod:
+                  type: boolean
+                  description: |
+                    Mark this as a moderator note.
+                    Requires the `ModNote` permission on the authenticated account.
+              required:
+                - text
+      responses:
+        200:
+          description: The note was created.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
 
-#         Alternatively, you can [post it in your slack workspace](https://playstrategy.org/daily-puzzle-slack).
-#       tags:
-#         - Puzzles
-#       security: []
-#       responses:
-#         200:
-#           description: The daily puzzle.
-#           headers:
-#             Access-Control-Allow-Origin:
-#               schema:
-#                 type: string
-#                 default: "'*'"
-#           content:
-#             application/x-ndjson:
-#               schema:
-#                 $ref: '#/components/schemas/PuzzleJson'
+  /api/puzzle/daily:
+    get:
+      operationId: apiPuzzleDaily
+      summary: Get the daily puzzle
+      description: |
+        Get the daily Play Strategy puzzle in JSON format.
 
-#   /api/puzzle/activity:
-#     get:
-#       operationId: apiPuzzleActivity
-#       summary: Get your puzzle activity
-#       description: |
-#         Download your puzzle activity in [ndjson](http://ndjson.org/) format.
+        Alternatively, you can [post it in your slack workspace](https://playstrategy.org/daily-puzzle-slack).
+      tags:
+        - Puzzles
+      security: []
+      responses:
+        200:
+          description: The daily puzzle.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/PuzzleJson'
 
-#         Puzzle activity is sorted by reverse chronological order (most recent first)
+  /api/puzzle/activity:
+    get:
+      operationId: apiPuzzleActivity
+      summary: Get your puzzle activity
+      description: |
+        Download your puzzle activity in [ndjson](http://ndjson.org/) format.
 
-#         We recommend streaming the response, for it can be very long.
-#       tags:
-#         - Puzzles
-#         - OAuth
-#       security:
-#         - OAuth2: ["puzzle:read"]
-#       parameters:
-#         - in: query
-#           name: max
-#           description: How many entries to download. Leave empty to download all activity.
-#           schema:
-#             type: integer
-#             minimum: 1
-#             default: null
-#       responses:
-#         200:
-#           description: The puzzle activity of the logged in user.
-#           headers:
-#             Access-Control-Allow-Origin:
-#               schema:
-#                 type: string
-#                 default: "'*'"
-#           content:
-#             application/x-ndjson:
-#               schema:
-#                 $ref: '#/components/schemas/PuzzleRoundJson'
+        Puzzle activity is sorted by reverse chronological order (most recent first)
+
+        We recommend streaming the response, for it can be very long.
+      tags:
+        - Puzzles
+        - OAuth
+      security:
+        - OAuth2: ["puzzle:read"]
+      parameters:
+        - in: query
+          name: max
+          description: How many entries to download. Leave empty to download all activity.
+          schema:
+            type: integer
+            minimum: 1
+            default: null
+      responses:
+        200:
+          description: The puzzle activity of the logged in user.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/PuzzleRoundJson'
+
+  /api/puzzle/dashboard/{days}:
+    get:
+      operationId: apiPuzzleDashboard
+      summary: Get your puzzle dashboard
+      description: |
+        Download your puzzle dashboard in JSON format.
+        Aggregates puzzle results over the given number of days.
+      tags:
+        - Puzzles
+        - OAuth
+      security:
+        - OAuth2: ["puzzle:read"]
+      parameters:
+        - in: path
+          name: days
+          required: true
+          description: How many days to look back when aggregating puzzle results.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 365
+            default: 30
+      responses:
+        200:
+          description: The puzzle dashboard of the logged in user.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PuzzleDashboardJson'
 
   /api/users:
     post:
@@ -698,6 +819,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/GameJson'
 
+  /match/export/{gameId}:
+    get:
+      operationId: matchExport
+      summary: Export all games in a multimatch
+      description: |
+        Download all games in a multimatch in either PGN or JSON format.
+      tags:
+        - Games
+      security: []
+      parameters:
+        - in: path
+          name: gameId
+          description: The game ID of the first game in the multimatch (8 characters).
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The games of the multimatch.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/x-chess-pgn:
+              schema:
+                $ref: '#/components/schemas/GamePgn'
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/GameJson'
+
   /api/user/{username}/current-game:
     get:
       operationId: apiUserCurrentGame
@@ -967,6 +1120,102 @@ paths:
               schema:
                 $ref: '#/components/schemas/GameJson'
 
+  /api/games/variant/{variant}:
+    get:
+      operationId: apiGamesVariant
+      summary: Export games by variant
+      description: |
+        Download all games of a specific variant in PGN or [ndjson](http://ndjson.org/) format.
+
+        Requires the private `PrivateApi:DbExport` OAuth scope, which is only available to internal/authorized users.
+
+        Games are sorted by reverse chronological order (most recent first).
+
+        We recommend streaming the response, for it can be very long.
+      tags:
+        - Games
+        - OAuth
+      security:
+        - OAuth2: ["api:db-export"]
+      parameters:
+        - in: path
+          name: variant
+          required: true
+          description: The game variant key (e.g. chess, draughts, shogi, xiangqi).
+          schema:
+            type: string
+        - in: query
+          name: since
+          description: Download games played since this timestamp.
+          schema:
+            type: integer
+            minimum: 1356998400070
+            default: Account creation date
+        - in: query
+          name: until
+          description: Download games played until this timestamp.
+          schema:
+            type: integer
+            minimum: 1356998400070
+            default: Now
+        - in: query
+          name: analysed
+          description: "[Filter] Only games with or without a computer analysis available"
+          schema:
+            type: boolean
+            default: null
+        - in: query
+          name: moves
+          description: Include the PGN moves.
+          schema:
+            type: boolean
+            default: true
+        - in: query
+          name: tags
+          description: Include the PGN tags.
+          schema:
+            type: boolean
+            default: true
+        - in: query
+          name: clocks
+          description: |
+            Include clock comments in the PGN moves, when available.
+
+            Example: `2. exd5 { [%clk 1:01:27] } e5 { [%clk 1:01:28] }`
+          schema:
+            type: boolean
+            default: false
+        - in: query
+          name: evals
+          description: |
+            Include analysis evaluation comments in the PGN, when available.
+
+            Example: `12. Bxf6 { [%eval 0.23] } a3 { [%eval -1.09] }`
+          schema:
+            type: boolean
+            default: false
+        - in: query
+          name: opening
+          description: Include the opening name.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          description: The games of the requested variant.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/x-chess-pgn:
+              schema:
+                $ref: '#/components/schemas/GamePgn'
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/GameJson'
+
   /games/export/_ids:
     post:
       operationId: gamesExportIds
@@ -1191,6 +1440,14 @@ paths:
       tags:
         - Games
       security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The game ID (8 characters).
+          schema:
+            type: string
+            example: "5IrD6Gzz"
       responses:
         200:
           description: The stream of the game moves.
@@ -1341,20 +1598,130 @@ paths:
                 startDate:
                   type: integer
                   description: Timestamp to start the tournament at a given date and time. Overrides the `waitMinutes` setting
+                'clock.delay':
+                  type: integer
+                  description: Clock delay in seconds. Used with `clock.useBronsteinDelay` or `clock.useSimpleDelay`.
+                  minimum: 0
+                  maximum: 120
+                'clock.byoyomi':
+                  type: integer
+                  description: Byoyomi period length in seconds. Used with `clock.useByoyomi`. Applies to Shogi and Go variants.
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 50
+                    - 60
+                'clock.periods':
+                  type: integer
+                  description: Number of byoyomi periods. Used with `clock.useByoyomi`.
+                  minimum: 0
+                  maximum: 5
+                'clock.useBronsteinDelay':
+                  type: boolean
+                  description: Use Bronstein delay clock instead of increment. Requires `clock.delay`.
+                'clock.useSimpleDelay':
+                  type: boolean
+                  description: Use simple delay clock instead of increment. Requires `clock.delay`.
+                'clock.useByoyomi':
+                  type: boolean
+                  description: Use byoyomi clock instead of increment. Requires `clock.byoyomi` and `clock.periods`.
                 variant:
                   type: string
-                  description: The variant to use in tournament games
+                  description: |
+                    The variant to use in tournament games. Encoded as `{GameFamilyId}_{VariantId}`.
+
+                    **Chess (family 0):** `0_1` Standard, `0_2` Chess960, `0_3` From Position, `0_4` King of the Hill,
+                    `0_5` Three-check, `0_6` Antichess, `0_7` Atomic, `0_8` Horde, `0_9` Racing Kings,
+                    `0_10` Crazyhouse, `0_12` Five-check, `0_13` No Castling, `0_15` Monster
+
+                    **Lines of Action (family 2):** `2_11` Lines Of Action, `2_14` Scrambled Eggs
+
+                    **Draughts (family 1):** `1_1` International, `1_6` Antidraughts, `1_8` Frysk!, `1_9` Breakthrough,
+                    `1_10` Frisian, `1_11` Russian, `1_12` Brazilian, `1_13` Pool, `1_14` Portuguese, `1_15` English
+
+                    **Shogi (family 3):** `3_1` Shogi, `3_5` Mini Shogi
+
+                    **Xiangqi (family 4):** `4_2` Xiangqi, `4_4` Mini Xiangqi
+
+                    **Flipello/Othello (family 5):** `5_6` Flipello, `5_7` Flipello10, `5_11` AntiFlipello, `5_12` Octagon Flipello
+
+                    **Oware (family 6):** `6_1` Oware
+
+                    **Togyzkumalak (family 7):** `7_1` Togyzkumalak, `7_2` Bestemshe
+
+                    **Amazons (family 8):** `8_8` Amazons
+
+                    **Go (family 9):** `9_1` Go 9x9, `9_2` Go 13x13, `9_4` Go 19x19
+
+                    **Backgammon (family 10):** `10_1` Backgammon, `10_2` Nackgammon, `10_4` Hyper
+
+                    **BreakthroughTroyka (family 11):** `11_9` Breakthrough Troyka, `11_10` Mini Breakthrough
+
+                    **Abalone (family 12):** `12_1` Abalone
+
+                    **Dameo (family 13):** `13_1` Dameo
+                  default: "0_1"
                   enum:
-                    - standard
-                    - chess960
-                    - crazyhouse
-                    - antichess
-                    - atomic
-                    - horde
-                    - kingOfTheHill
-                    - racingKings
-                    - threeCheck
-                  default: standard
+                    - "0_1"
+                    - "0_2"
+                    - "0_3"
+                    - "0_4"
+                    - "0_5"
+                    - "0_6"
+                    - "0_7"
+                    - "0_8"
+                    - "0_9"
+                    - "0_10"
+                    - "0_12"
+                    - "0_13"
+                    - "0_15"
+                    - "2_11"
+                    - "2_14"
+                    - "1_1"
+                    - "1_6"
+                    - "1_8"
+                    - "1_9"
+                    - "1_10"
+                    - "1_11"
+                    - "1_12"
+                    - "1_13"
+                    - "1_14"
+                    - "1_15"
+                    - "3_1"
+                    - "3_5"
+                    - "4_2"
+                    - "4_4"
+                    - "5_6"
+                    - "5_7"
+                    - "5_11"
+                    - "5_12"
+                    - "6_1"
+                    - "7_1"
+                    - "7_2"
+                    - "8_8"
+                    - "9_1"
+                    - "9_2"
+                    - "9_4"
+                    - "10_1"
+                    - "10_2"
+                    - "10_4"
+                    - "11_9"
+                    - "11_10"
+                    - "12_1"
+                    - "13_1"
                 rated:
                   type: boolean
                   description: Games are rated and impact players ratings
@@ -1370,10 +1737,10 @@ paths:
                   type: boolean
                   description: After 2 wins, consecutive wins grant 4 points instead of 2.
                   default: true
-                # "conditions.titled":
-                #   type: boolean
-                #   description: Whether to require a title to enter the tournament
-                #   default: false
+                statusScoring:
+                  type: boolean
+                  description: Count unfinished games in the score (using game status rather than waiting for completion).
+                  default: false
                 hasChat:
                   type: boolean
                   description: Whether the players can discuss in a chat
@@ -1402,12 +1769,137 @@ paths:
                 conditions.minRating.rating:
                   type: integer
                   description: Minimum rating to join. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                    - 2300
+                    - 2400
+                    - 2500
+                    - 2600
                 conditions.maxRating.rating:
                   type: integer
                   description: Maximum rating to join. Based on best rating reached in the last 7 days. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 800
+                    - 900
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
                 conditions.nbRatedGame.nb:
                   type: integer
                   description: Minimum number of rated games required to join.
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 30
+                    - 40
+                    - 50
+                    - 75
+                    - 100
+                    - 150
+                    - 200
+                conditions.titled:
+                  type: boolean
+                  description: Restrict entry to titled players only.
+                medley:
+                  type: boolean
+                  description: Enable medley mode, where the variant changes at set intervals during the tournament.
+                medleyIntervalOptions.medleyMinutes:
+                  type: integer
+                  description: Duration in minutes of each medley interval (how long each variant is played).
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 45
+                    - 60
+                medleyIntervalOptions.balanceIntervals:
+                  type: boolean
+                  description: Balance the interval durations based on clock limits.
+                medleyIntervalOptions.numIntervals:
+                  type: integer
+                  description: Number of different game variants to include in the medley.
+                  minimum: 2
+                medleyDefaults.onePerGameFamily:
+                  type: boolean
+                  description: When building the medley variant list, include at most one variant per game family.
+                medleyDefaults.exoticChessVariants:
+                  type: boolean
+                  description: When building the medley variant list, include exotic chess variants (Horde, Racing Kings, etc.).
+                medleyDefaults.draughts64Variants:
+                  type: boolean
+                  description: When building the medley variant list, include 64-square draughts variants (Russian, Brazilian, Pool, etc.).
+                medleyGameFamilies.chess:
+                  type: boolean
+                  description: Include Chess variants in the medley.
+                medleyGameFamilies.draughts:
+                  type: boolean
+                  description: Include Draughts variants in the medley.
+                medleyGameFamilies.shogi:
+                  type: boolean
+                  description: Include Shogi variants in the medley.
+                medleyGameFamilies.xiangqi:
+                  type: boolean
+                  description: Include Xiangqi variants in the medley.
+                medleyGameFamilies.loa:
+                  type: boolean
+                  description: Include Lines of Action variants in the medley.
+                medleyGameFamilies.flipello:
+                  type: boolean
+                  description: Include Flipello/Othello variants in the medley.
+                medleyGameFamilies.mancala:
+                  type: boolean
+                  description: Include Mancala variants (Oware, Togyzkumalak) in the medley.
+                medleyGameFamilies.amazons:
+                  type: boolean
+                  description: Include Amazons in the medley.
+                medleyGameFamilies.breakthroughtroyka:
+                  type: boolean
+                  description: Include BreakthroughTroyka variants in the medley.
+                medleyGameFamilies.go:
+                  type: boolean
+                  description: Include Go variants in the medley.
+                medleyGameFamilies.backgammon:
+                  type: boolean
+                  description: Include Backgammon variants in the medley.
+                medleyGameFamilies.abalone:
+                  type: boolean
+                  description: Include Abalone in the medley.
+                variantSettings.handicaps.handicapped:
+                  type: boolean
+                  description: Enable handicapped games. Only applicable to Go and Shogi tournaments.
+                variantSettings.handicaps.inputPlayerRatings:
+                  type: string
+                  description: |
+                    Custom player ratings used to calculate handicaps, one per line in the format `username rating`.
+                    Only applicable when `variantSettings.handicaps.handicapped` is true.
               required:
                 - clockTime
                 - clockIncrement
@@ -1547,20 +2039,130 @@ paths:
                 startDate:
                   type: integer
                   description: Timestamp to start the tournament at a given date and time. Overrides the `waitMinutes` setting
+                'clock.delay':
+                  type: integer
+                  description: Clock delay in seconds. Used with `clock.useBronsteinDelay` or `clock.useSimpleDelay`.
+                  minimum: 0
+                  maximum: 120
+                'clock.byoyomi':
+                  type: integer
+                  description: Byoyomi period length in seconds. Used with `clock.useByoyomi`. Applies to Shogi and Go variants.
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 50
+                    - 60
+                'clock.periods':
+                  type: integer
+                  description: Number of byoyomi periods. Used with `clock.useByoyomi`.
+                  minimum: 0
+                  maximum: 5
+                'clock.useBronsteinDelay':
+                  type: boolean
+                  description: Use Bronstein delay clock instead of increment. Requires `clock.delay`.
+                'clock.useSimpleDelay':
+                  type: boolean
+                  description: Use simple delay clock instead of increment. Requires `clock.delay`.
+                'clock.useByoyomi':
+                  type: boolean
+                  description: Use byoyomi clock instead of increment. Requires `clock.byoyomi` and `clock.periods`.
                 variant:
                   type: string
-                  description: The variant to use in tournament games
+                  description: |
+                    The variant to use in tournament games. Encoded as `{GameFamilyId}_{VariantId}`.
+
+                    **Chess (family 0):** `0_1` Standard, `0_2` Chess960, `0_3` From Position, `0_4` King of the Hill,
+                    `0_5` Three-check, `0_6` Antichess, `0_7` Atomic, `0_8` Horde, `0_9` Racing Kings,
+                    `0_10` Crazyhouse, `0_12` Five-check, `0_13` No Castling, `0_15` Monster
+
+                    **Lines of Action (family 2):** `2_11` Lines Of Action, `2_14` Scrambled Eggs
+
+                    **Draughts (family 1):** `1_1` International, `1_6` Antidraughts, `1_8` Frysk!, `1_9` Breakthrough,
+                    `1_10` Frisian, `1_11` Russian, `1_12` Brazilian, `1_13` Pool, `1_14` Portuguese, `1_15` English
+
+                    **Shogi (family 3):** `3_1` Shogi, `3_5` Mini Shogi
+
+                    **Xiangqi (family 4):** `4_2` Xiangqi, `4_4` Mini Xiangqi
+
+                    **Flipello/Othello (family 5):** `5_6` Flipello, `5_7` Flipello10, `5_11` AntiFlipello, `5_12` Octagon Flipello
+
+                    **Oware (family 6):** `6_1` Oware
+
+                    **Togyzkumalak (family 7):** `7_1` Togyzkumalak, `7_2` Bestemshe
+
+                    **Amazons (family 8):** `8_8` Amazons
+
+                    **Go (family 9):** `9_1` Go 9x9, `9_2` Go 13x13, `9_4` Go 19x19
+
+                    **Backgammon (family 10):** `10_1` Backgammon, `10_2` Nackgammon, `10_4` Hyper
+
+                    **BreakthroughTroyka (family 11):** `11_9` Breakthrough Troyka, `11_10` Mini Breakthrough
+
+                    **Abalone (family 12):** `12_1` Abalone
+
+                    **Dameo (family 13):** `13_1` Dameo
+                  default: "0_1"
                   enum:
-                    - standard
-                    - chess960
-                    - crazyhouse
-                    - antichess
-                    - atomic
-                    - horde
-                    - kingOfTheHill
-                    - racingKings
-                    - threeCheck
-                  default: standard
+                    - "0_1"
+                    - "0_2"
+                    - "0_3"
+                    - "0_4"
+                    - "0_5"
+                    - "0_6"
+                    - "0_7"
+                    - "0_8"
+                    - "0_9"
+                    - "0_10"
+                    - "0_12"
+                    - "0_13"
+                    - "0_15"
+                    - "2_11"
+                    - "2_14"
+                    - "1_1"
+                    - "1_6"
+                    - "1_8"
+                    - "1_9"
+                    - "1_10"
+                    - "1_11"
+                    - "1_12"
+                    - "1_13"
+                    - "1_14"
+                    - "1_15"
+                    - "3_1"
+                    - "3_5"
+                    - "4_2"
+                    - "4_4"
+                    - "5_6"
+                    - "5_7"
+                    - "5_11"
+                    - "5_12"
+                    - "6_1"
+                    - "7_1"
+                    - "7_2"
+                    - "8_8"
+                    - "9_1"
+                    - "9_2"
+                    - "9_4"
+                    - "10_1"
+                    - "10_2"
+                    - "10_4"
+                    - "11_9"
+                    - "11_10"
+                    - "12_1"
+                    - "13_1"
                 rated:
                   type: boolean
                   description: Games are rated and impact players ratings
@@ -1576,10 +2178,10 @@ paths:
                   type: boolean
                   description: After 2 wins, consecutive wins grant 4 points instead of 2.
                   default: true
-                # "conditions.titled":
-                #   type: boolean
-                #   description: Whether to require a title to enter the tournament
-                #   default: false
+                statusScoring:
+                  type: boolean
+                  description: Count unfinished games in the score (using game status rather than waiting for completion).
+                  default: false
                 hasChat:
                   type: boolean
                   description: Whether the players can discuss in a chat
@@ -1593,12 +2195,137 @@ paths:
                 conditions.minRating.rating:
                   type: integer
                   description: Minimum rating to join. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                    - 2300
+                    - 2400
+                    - 2500
+                    - 2600
                 conditions.maxRating.rating:
                   type: integer
                   description: Maximum rating to join. Based on best rating reached in the last 7 days. Leave empty to let everyone join the tournament.
+                  enum:
+                    - 800
+                    - 900
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
                 conditions.nbRatedGame.nb:
                   type: integer
                   description: Minimum number of rated games required to join.
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 30
+                    - 40
+                    - 50
+                    - 75
+                    - 100
+                    - 150
+                    - 200
+                conditions.titled:
+                  type: boolean
+                  description: Restrict entry to titled players only.
+                medley:
+                  type: boolean
+                  description: Enable medley mode, where the variant changes at set intervals during the tournament.
+                medleyIntervalOptions.medleyMinutes:
+                  type: integer
+                  description: Duration in minutes of each medley interval (how long each variant is played).
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 45
+                    - 60
+                medleyIntervalOptions.balanceIntervals:
+                  type: boolean
+                  description: Balance the interval durations based on clock limits.
+                medleyIntervalOptions.numIntervals:
+                  type: integer
+                  description: Number of different game variants to include in the medley.
+                  minimum: 2
+                medleyDefaults.onePerGameFamily:
+                  type: boolean
+                  description: When building the medley variant list, include at most one variant per game family.
+                medleyDefaults.exoticChessVariants:
+                  type: boolean
+                  description: When building the medley variant list, include exotic chess variants (Horde, Racing Kings, etc.).
+                medleyDefaults.draughts64Variants:
+                  type: boolean
+                  description: When building the medley variant list, include 64-square draughts variants (Russian, Brazilian, Pool, etc.).
+                medleyGameFamilies.chess:
+                  type: boolean
+                  description: Include Chess variants in the medley.
+                medleyGameFamilies.draughts:
+                  type: boolean
+                  description: Include Draughts variants in the medley.
+                medleyGameFamilies.shogi:
+                  type: boolean
+                  description: Include Shogi variants in the medley.
+                medleyGameFamilies.xiangqi:
+                  type: boolean
+                  description: Include Xiangqi variants in the medley.
+                medleyGameFamilies.loa:
+                  type: boolean
+                  description: Include Lines of Action variants in the medley.
+                medleyGameFamilies.flipello:
+                  type: boolean
+                  description: Include Flipello/Othello variants in the medley.
+                medleyGameFamilies.mancala:
+                  type: boolean
+                  description: Include Mancala variants (Oware, Togyzkumalak) in the medley.
+                medleyGameFamilies.amazons:
+                  type: boolean
+                  description: Include Amazons in the medley.
+                medleyGameFamilies.breakthroughtroyka:
+                  type: boolean
+                  description: Include BreakthroughTroyka variants in the medley.
+                medleyGameFamilies.go:
+                  type: boolean
+                  description: Include Go variants in the medley.
+                medleyGameFamilies.backgammon:
+                  type: boolean
+                  description: Include Backgammon variants in the medley.
+                medleyGameFamilies.abalone:
+                  type: boolean
+                  description: Include Abalone in the medley.
+                variantSettings.handicaps.handicapped:
+                  type: boolean
+                  description: Enable handicapped games. Only applicable to Go and Shogi tournaments.
+                variantSettings.handicaps.inputPlayerRatings:
+                  type: string
+                  description: |
+                    Custom player ratings used to calculate handicaps, one per line in the format `username rating`.
+                    Only applicable when `variantSettings.handicaps.handicapped` is true.
               required:
                 - clockTime
                 - clockIncrement
@@ -1958,7 +2685,7 @@ paths:
       description: |
         Create a Swiss tournament for your team.
 
-        This endpoint mirrors the Swiss tournament form from your team pagee.
+        This endpoint mirrors the Swiss tournament form from your team page.
 
         You can create up to 12 tournaments per day.
       tags:
@@ -2009,24 +2736,134 @@ paths:
                   description: |
                     How long to wait between each round, in seconds.
 
-                    Set to 99999999 to manually schedule each round from the tournament UI.
+                    Allowed values: `5`, `10`, `20`, `30`, `45`, `60`, `120`, `180`, `300`, `600`, `900`, `1200`, `1800`, `2700`, `3600`, `86400` (1 day), `172800` (2 days), `604800` (1 week).
+
+                    Set to `99999999` to manually schedule each round from the tournament UI.
+                  default: 99999999
+                'clock.delay':
+                  type: integer
+                  description: Clock delay in seconds. Used with `clock.useBronsteinDelay` or `clock.useSimpleDelay`.
                   minimum: 0
-                  maximum: 86400
-                  default: auto
+                  maximum: 120
+                'clock.byoyomi':
+                  type: integer
+                  description: Byoyomi period length in seconds. Used with `clock.useByoyomi`. Applies to Shogi and Go variants.
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    - 15
+                    - 20
+                    - 25
+                    - 30
+                    - 40
+                    - 50
+                    - 60
+                'clock.periods':
+                  type: integer
+                  description: Number of byoyomi periods. Used with `clock.useByoyomi`.
+                  minimum: 0
+                  maximum: 5
+                'clock.useBronsteinDelay':
+                  type: boolean
+                  description: Use Bronstein delay clock instead of increment. Requires `clock.delay`.
+                'clock.useSimpleDelay':
+                  type: boolean
+                  description: Use simple delay clock instead of increment. Requires `clock.delay`.
+                'clock.useByoyomi':
+                  type: boolean
+                  description: Use byoyomi clock instead of increment. Requires `clock.byoyomi` and `clock.periods`.
                 variant:
                   type: string
-                  description: The variant to use in tournament games
+                  description: |
+                    The variant to use in tournament games. Encoded as `{GameFamilyId}_{VariantId}`.
+
+                    **Chess (family 0):** `0_1` Standard, `0_2` Chess960, `0_3` From Position, `0_4` King of the Hill,
+                    `0_5` Three-check, `0_6` Antichess, `0_7` Atomic, `0_8` Horde, `0_9` Racing Kings,
+                    `0_10` Crazyhouse, `0_12` Five-check, `0_13` No Castling, `0_15` Monster
+
+                    **Lines of Action (family 2):** `2_11` Lines Of Action, `2_14` Scrambled Eggs
+
+                    **Draughts (family 1):** `1_1` International, `1_6` Antidraughts, `1_8` Frysk!, `1_9` Breakthrough,
+                    `1_10` Frisian, `1_11` Russian, `1_12` Brazilian, `1_13` Pool, `1_14` Portuguese, `1_15` English
+
+                    **Shogi (family 3):** `3_1` Shogi, `3_5` Mini Shogi
+
+                    **Xiangqi (family 4):** `4_2` Xiangqi, `4_4` Mini Xiangqi
+
+                    **Flipello/Othello (family 5):** `5_6` Flipello, `5_7` Flipello10, `5_11` AntiFlipello, `5_12` Octagon Flipello
+
+                    **Oware (family 6):** `6_1` Oware
+
+                    **Togyzkumalak (family 7):** `7_1` Togyzkumalak, `7_2` Bestemshe
+
+                    **Amazons (family 8):** `8_8` Amazons
+
+                    **Go (family 9):** `9_1` Go 9x9, `9_2` Go 13x13, `9_4` Go 19x19
+
+                    **Backgammon (family 10):** `10_1` Backgammon, `10_2` Nackgammon, `10_4` Hyper
+
+                    **BreakthroughTroyka (family 11):** `11_9` Breakthrough Troyka, `11_10` Mini Breakthrough
+
+                    **Abalone (family 12):** `12_1` Abalone
+
+                    **Dameo (family 13):** `13_1` Dameo
+                  default: "0_1"
                   enum:
-                    - standard
-                    - chess960
-                    - crazyhouse
-                    - antichess
-                    - atomic
-                    - horde
-                    - kingOfTheHill
-                    - racingKings
-                    - threeCheck
-                  default: standard
+                    - "0_1"
+                    - "0_2"
+                    - "0_3"
+                    - "0_4"
+                    - "0_5"
+                    - "0_6"
+                    - "0_7"
+                    - "0_8"
+                    - "0_9"
+                    - "0_10"
+                    - "0_12"
+                    - "0_13"
+                    - "0_15"
+                    - "2_11"
+                    - "2_14"
+                    - "1_1"
+                    - "1_6"
+                    - "1_8"
+                    - "1_9"
+                    - "1_10"
+                    - "1_11"
+                    - "1_12"
+                    - "1_13"
+                    - "1_14"
+                    - "1_15"
+                    - "3_1"
+                    - "3_5"
+                    - "4_2"
+                    - "4_4"
+                    - "5_6"
+                    - "5_7"
+                    - "5_11"
+                    - "5_12"
+                    - "6_1"
+                    - "7_1"
+                    - "7_2"
+                    - "8_8"
+                    - "9_1"
+                    - "9_2"
+                    - "9_4"
+                    - "10_1"
+                    - "10_2"
+                    - "10_4"
+                    - "11_9"
+                    - "11_10"
+                    - "12_1"
+                    - "13_1"
                 description:
                   type: string
                   description: Anything you want to tell players about the tournament
@@ -2034,6 +2871,9 @@ paths:
                   type: boolean
                   description: Games are rated and impact players ratings
                   default: true
+                password:
+                  type: string
+                  description: Make the tournament private, and restrict access with a password
                 chatFor:
                   type: number
                   description: |
@@ -2043,6 +2883,186 @@ paths:
                     - 20 = Only team members
                     - 30 = All Play Strategy players
                   default: 20
+                conditions.minRating.rating:
+                  type: integer
+                  description: Minimum rating to join. Leave empty to let everyone join.
+                  enum:
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                    - 2300
+                    - 2400
+                    - 2500
+                    - 2600
+                conditions.maxRating.rating:
+                  type: integer
+                  description: Maximum rating to join. Leave empty to let everyone join.
+                  enum:
+                    - 800
+                    - 900
+                    - 1000
+                    - 1100
+                    - 1200
+                    - 1300
+                    - 1400
+                    - 1500
+                    - 1600
+                    - 1700
+                    - 1800
+                    - 1900
+                    - 2000
+                    - 2100
+                    - 2200
+                conditions.nbRatedGame.nb:
+                  type: integer
+                  description: Minimum number of rated games required to join.
+                  enum:
+                    - 5
+                    - 10
+                    - 15
+                    - 20
+                    - 30
+                    - 40
+                    - 50
+                    - 75
+                    - 100
+                    - 150
+                    - 200
+                conditions.titled:
+                  type: boolean
+                  description: Restrict entry to titled players only.
+                forbiddenPairings:
+                  type: string
+                  description: |
+                    Usernames of players that must not be paired together. One user pair per line, separated by a space.
+                    Example: `playerA playerB`
+                minutesBeforeStartToJoin:
+                  type: integer
+                  description: |
+                    How many minutes before the start time players are no longer allowed to join.
+                    Set to 0 for no restriction.
+                  enum:
+                    - 0
+                    - 15
+                    - 30
+                    - 60
+                    - 120
+                    - 360
+                    - 720
+                    - 1440
+                    - 2880
+                    - 10080
+                halfwayBreak:
+                  type: integer
+                  description: |
+                    Duration in seconds of a break inserted after the halfway round.
+                    Set to 0 for no break.
+                  enum:
+                    - 0
+                    - 30
+                    - 60
+                    - 120
+                    - 300
+                    - 600
+                    - 1200
+                    - 1800
+                    - 2700
+                    - 3600
+                    - 7200
+                medley:
+                  type: boolean
+                  description: Enable medley mode, where each round uses a different game variant.
+                medleyDefaults.onePerGameFamily:
+                  type: boolean
+                  description: When building the medley variant list, include at most one variant per game family.
+                medleyDefaults.exoticChessVariants:
+                  type: boolean
+                  description: When building the medley variant list, include exotic chess variants (Horde, Racing Kings, etc.).
+                medleyDefaults.draughts64Variants:
+                  type: boolean
+                  description: When building the medley variant list, include 64-square draughts variants (Russian, Brazilian, Pool, etc.).
+                medleyGameFamilies.chess:
+                  type: boolean
+                  description: Include Chess variants in the medley.
+                medleyGameFamilies.draughts:
+                  type: boolean
+                  description: Include Draughts variants in the medley.
+                medleyGameFamilies.shogi:
+                  type: boolean
+                  description: Include Shogi variants in the medley.
+                medleyGameFamilies.xiangqi:
+                  type: boolean
+                  description: Include Xiangqi variants in the medley.
+                medleyGameFamilies.loa:
+                  type: boolean
+                  description: Include Lines of Action variants in the medley.
+                medleyGameFamilies.flipello:
+                  type: boolean
+                  description: Include Flipello/Othello variants in the medley.
+                medleyGameFamilies.mancala:
+                  type: boolean
+                  description: Include Mancala variants (Oware, Togyzkumalak) in the medley.
+                medleyGameFamilies.amazons:
+                  type: boolean
+                  description: Include Amazons in the medley.
+                medleyGameFamilies.breakthroughtroyka:
+                  type: boolean
+                  description: Include BreakthroughTroyka variants in the medley.
+                medleyGameFamilies.go:
+                  type: boolean
+                  description: Include Go variants in the medley.
+                medleyGameFamilies.backgammon:
+                  type: boolean
+                  description: Include Backgammon variants in the medley.
+                medleyGameFamilies.abalone:
+                  type: boolean
+                  description: Include Abalone in the medley.
+                mcmahon:
+                  type: boolean
+                  description: Enable McMahon pairing system. Only applicable to Go tournaments.
+                mcmahonCutoff:
+                  type: string
+                  description: Grade cutoff for the McMahon pairing system (e.g. `10k`, `1d`). Only applicable when `mcmahon` is true.
+                variantSettings.handicaps.handicapped:
+                  type: boolean
+                  description: Enable handicapped games. Only applicable to Go and Shogi tournaments.
+                variantSettings.handicaps.inputPlayerRatings:
+                  type: string
+                  description: |
+                    Custom player ratings used to calculate handicaps, one per line in the format `username rating`.
+                    Only applicable when `variantSettings.handicaps.handicapped` is true.
+                variantSettings.backgammonPoints:
+                  type: integer
+                  description: Points target for backgammon match play (e.g. 3, 5, 7). Only applicable to Backgammon tournaments.
+                'xGamesChoice.bestOfX':
+                  type: boolean
+                  description: Each round is a best-of-X match. Requires `xGamesChoice.nbGamesPerRound`.
+                'xGamesChoice.playX':
+                  type: boolean
+                  description: Each round plays exactly X games regardless of result. Requires `xGamesChoice.nbGamesPerRound`.
+                'xGamesChoice.matchScore':
+                  type: boolean
+                  description: Use cumulative match score across games in a round.
+                'xGamesChoice.nbGamesPerRound':
+                  type: integer
+                  description: Number of games per round, used with `xGamesChoice.bestOfX` or `xGamesChoice.playX`.
+                  minimum: 1
+                'drawTables.drawTables':
+                  type: boolean
+                  description: Enable draw tables for the tournament.
+                'drawTables.perPairingDrawTables':
+                  type: boolean
+                  description: Use per-pairing draw tables rather than a single shared draw table.
               required:
                 - 'clock.limit'
                 - 'clock.increment'
@@ -2463,297 +3483,297 @@ paths:
               schema:
                 $ref: '#/components/schemas/StudyPgn'
 
-  /api/broadcast:
-    get:
-      operationId: broadcastIndex
-      summary: Get official broadcasts
-      description: |
-        Get all incoming, ongoing, and finished official broadcasts.
-        The broadcasts are sorted by start date, most recent first.
-
-        **Broadcasts are streamed as [ndjson](http://ndjson.org/)**, i.e. one JSON object per line.
-      tags:
-        - Broadcasts
-      parameters:
-        - in: query
-          name: nb
-          description: Max number of broadcasts to fetch
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-      responses:
-        200:
-          description: The list of official broadcasts.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Broadcast'
-  /broadcast/new:
-    post:
-      operationId: broadcastCreate
-      summary: Create a broadcast
-      description: |
-        Create a new broadcast to relay external games.
-        This endpoint accepts the same form data as the [web form](https://playstrategy.org/broadcast/new).
-      tags:
-        - Broadcasts
-        - OAuth
-      security:
-        - OAuth2: ["study:write"]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: |
-                    Name of the broadcast. Length must be between 3 and 80 characters.
-
-                    Example: `Sinquefield Cup - Round 10`
-                description:
-                  type: string
-                  description: |
-                    Short description of the broadcast. Length must be between 3 and 400 characters.
-
-                    Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
-                syncUrl:
-                  type: string
-                  description: |
-                    URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
-
-                    Example: `http://myserver.org/myevent/round-10/games.pgn`
-
-                    If the syncUrl is missing, then the broadcast needs to be fed by [pushing PGN to it](#operation/broadcastPush).
-                markdown:
-                  type: string
-                  description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
-                credit:
-                  type: string
-                  description: Optional short text to give credit to the source provider.
-                startsAt:
-                  type: integer
-                  description: |
-                    Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
-
-                    Example: `1356998400070`
-                  minimum: 1356998400070
-                official:
-                  type: boolean
-                  description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
-                throttle:
-                  type: integer
-                  description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will [display ads on your broadcast](https://i.imgur.com/B47wT5P.jpg).
-              required:
-                - name
-                - description
-      responses:
-        200:
-          description: The broadcast was successfully created.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Broadcast'
-        400:
-          description: The creation of the broadcast failed.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /broadcast/{slug}/{broadcastId}:
-    get:
-      operationId: broadcastGet
-      summary: Get your broadcast
-      description: |
-        Get information about a broadcast that you created.
-        You will need it if you want to update that broadcast.
-      tags:
-        - Broadcasts
-        - OAuth
-      security:
-        - OAuth2: ["study:read"]
-      parameters:
-        - in: path
-          name: slug
-          description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
-          required: true
-          schema:
-            type: string
-            default: "-"
-        - in: path
-          name: broadcastId
-          description: The broadcast ID (8 characters).
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: The information about the broadcast.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Broadcast'
-
-  /broadcast/{slug}/{broadcastId}/edit:
-      post:
-        operationId: broadcastUpdate
-        summary: Update your broadcast
-        description: |
-          Update information about a broadcast that you created.
-          This endpoint accepts the same form data as the web form.
-          All fields must be populated with data. Missing fields will override the broadcast with empty data.
-          For instance, if you omit `startDate`, then any pre-existing start date will be removed.
-        tags:
-          - Broadcasts
-          - OAuth
-        security:
-          - OAuth2: ["study:write"]
-        parameters:
-          - in: path
-            name: slug
-            description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
-            required: true
-            schema:
-              type: string
-              default: "-"
-          - in: path
-            name: broadcastId
-            description: The broadcast ID (8 characters).
-            required: true
-            schema:
-              type: string
-        requestBody:
-          required: true
-          content:
-            application/x-www-form-urlencoded:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: |
-                      Name of the broadcast. Length must be between 3 and 80 characters.
-
-                      Example: `Sinquefield Cup - Round 10`
-                  description:
-                    type: string
-                    description: |
-                      Short description of the broadcast. Length must be between 3 and 400 characters.
-
-                      Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
-                  syncUrl:
-                    type: string
-                    description: |
-                      URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
-
-                      Example: `http://myserver.org/myevent/round-10/games.pgn`
-                  markdown:
-                    type: string
-                    description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
-                  credit:
-                    type: string
-                    description: Optional short text to give credit to the source provider.
-                  startsAt:
-                    type: integer
-                    description: |
-                      Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
-
-                      Example: `1356998400070`
-                    minimum: 1356998400070
-                  official:
-                    type: boolean
-                    description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
-                  throttle:
-                    type: integer
-                    description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will display ads on your broadcast.
-                required:
-                  - name
-                  - description
-        responses:
-          200:
-            description: The broadcast was successfully edited.
-            headers:
-              Access-Control-Allow-Origin:
-                schema:
-                  type: string
-                  default: "'*'"
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Broadcast'
-          400:
-            description: The edition of the broadcast failed.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Error'
-
-  /broadcast/{slug}/{broadcastId}/push:
-    post:
-      operationId: broadcastPush
-      summary: Push PGN to your broadcast
-      description: |
-        Update your broadcast with new PGN.
-        Only for broadcast without a source URL.
-      tags:
-        - Broadcasts
-        - OAuth
-      security:
-        - OAuth2: ["study:write"]
-      parameters:
-        - in: path
-          name: slug
-          description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
-          required: true
-          schema:
-            type: string
-            default: "-"
-        - in: path
-          name: broadcastId
-          description: The broadcast ID (8 characters).
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The PGN. It can contain up to 64 games, separated by a double new line.
-        required: true
-        content:
-          text/plain:
-            schema:
-              type: string
-      responses:
-        200:
-          description: The broadcast was successfully updated.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: "'*'"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Ok'
-
+#   /api/broadcast:
+#     get:
+#       operationId: broadcastIndex
+#       summary: Get official broadcasts
+#       description: |
+#         Get all incoming, ongoing, and finished official broadcasts.
+#         The broadcasts are sorted by start date, most recent first.
+#
+#         **Broadcasts are streamed as [ndjson](http://ndjson.org/)**, i.e. one JSON object per line.
+#       tags:
+#         - Broadcasts
+#       parameters:
+#         - in: query
+#           name: nb
+#           description: Max number of broadcasts to fetch
+#           schema:
+#             type: integer
+#             default: 20
+#             minimum: 1
+#       responses:
+#         200:
+#           description: The list of official broadcasts.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: '#/components/schemas/Broadcast'
+#   /broadcast/new:
+#     post:
+#       operationId: broadcastCreate
+#       summary: Create a broadcast
+#       description: |
+#         Create a new broadcast to relay external games.
+#         This endpoint accepts the same form data as the [web form](https://playstrategy.org/broadcast/new).
+#       tags:
+#         - Broadcasts
+#         - OAuth
+#       security:
+#         - OAuth2: ["study:write"]
+#       requestBody:
+#         required: true
+#         content:
+#           application/x-www-form-urlencoded:
+#             schema:
+#               type: object
+#               properties:
+#                 name:
+#                   type: string
+#                   description: |
+#                     Name of the broadcast. Length must be between 3 and 80 characters.
+#
+#                     Example: `Sinquefield Cup - Round 10`
+#                 description:
+#                   type: string
+#                   description: |
+#                     Short description of the broadcast. Length must be between 3 and 400 characters.
+#
+#                     Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
+#                 syncUrl:
+#                   type: string
+#                   description: |
+#                     URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
+#
+#                     Example: `http://myserver.org/myevent/round-10/games.pgn`
+#
+#                     If the syncUrl is missing, then the broadcast needs to be fed by [pushing PGN to it](#operation/broadcastPush).
+#                 markdown:
+#                   type: string
+#                   description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
+#                 credit:
+#                   type: string
+#                   description: Optional short text to give credit to the source provider.
+#                 startsAt:
+#                   type: integer
+#                   description: |
+#                     Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
+#
+#                     Example: `1356998400070`
+#                   minimum: 1356998400070
+#                 official:
+#                   type: boolean
+#                   description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
+#                 throttle:
+#                   type: integer
+#                   description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will [display ads on your broadcast](https://i.imgur.com/B47wT5P.jpg).
+#               required:
+#                 - name
+#                 - description
+#       responses:
+#         200:
+#           description: The broadcast was successfully created.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/Broadcast'
+#         400:
+#           description: The creation of the broadcast failed.
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/Error'
+#
+#   /broadcast/{slug}/{broadcastId}:
+#     get:
+#       operationId: broadcastGet
+#       summary: Get your broadcast
+#       description: |
+#         Get information about a broadcast that you created.
+#         You will need it if you want to update that broadcast.
+#       tags:
+#         - Broadcasts
+#         - OAuth
+#       security:
+#         - OAuth2: ["study:read"]
+#       parameters:
+#         - in: path
+#           name: slug
+#           description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
+#           required: true
+#           schema:
+#             type: string
+#             default: "-"
+#         - in: path
+#           name: broadcastId
+#           description: The broadcast ID (8 characters).
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         200:
+#           description: The information about the broadcast.
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: '#/components/schemas/Broadcast'
+#
+#   /broadcast/{slug}/{broadcastId}/edit:
+#       post:
+#         operationId: broadcastUpdate
+#         summary: Update your broadcast
+#         description: |
+#           Update information about a broadcast that you created.
+#           This endpoint accepts the same form data as the web form.
+#           All fields must be populated with data. Missing fields will override the broadcast with empty data.
+#           For instance, if you omit `startDate`, then any pre-existing start date will be removed.
+#         tags:
+#           - Broadcasts
+#           - OAuth
+#         security:
+#           - OAuth2: ["study:write"]
+#         parameters:
+#           - in: path
+#             name: slug
+#             description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
+#             required: true
+#             schema:
+#               type: string
+#               default: "-"
+#           - in: path
+#             name: broadcastId
+#             description: The broadcast ID (8 characters).
+#             required: true
+#             schema:
+#               type: string
+#         requestBody:
+#           required: true
+#           content:
+#             application/x-www-form-urlencoded:
+#               schema:
+#                 type: object
+#                 properties:
+#                   name:
+#                     type: string
+#                     description: |
+#                       Name of the broadcast. Length must be between 3 and 80 characters.
+#
+#                       Example: `Sinquefield Cup - Round 10`
+#                   description:
+#                     type: string
+#                     description: |
+#                       Short description of the broadcast. Length must be between 3 and 400 characters.
+#
+#                       Example: `An 11 round classical tournament featuring the 9 highest rated players in the world. Including Carlsen, Caruana, Ding, Aronian, Nakamura and more.`
+#                   syncUrl:
+#                     type: string
+#                     description: |
+#                       URL that Play Strategy will poll to get updates about the games. It must be publicly accessible from the Internet.
+#
+#                       Example: `http://myserver.org/myevent/round-10/games.pgn`
+#                   markdown:
+#                     type: string
+#                     description: Optional long description of the broadcast. Markdown is supported. Length must be less than 20,000 characters.
+#                   credit:
+#                     type: string
+#                     description: Optional short text to give credit to the source provider.
+#                   startsAt:
+#                     type: integer
+#                     description: |
+#                       Timestamp in milliseconds of broadcast start. Leave empty to manually start the broadcast.
+#
+#                       Example: `1356998400070`
+#                     minimum: 1356998400070
+#                   official:
+#                     type: boolean
+#                     description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, we will have to call the police.
+#                   throttle:
+#                     type: integer
+#                     description: For Play Strategy internal usage only. You are not allowed to use this flag. If you do it, chess24 will display ads on your broadcast.
+#                 required:
+#                   - name
+#                   - description
+#         responses:
+#           200:
+#             description: The broadcast was successfully edited.
+#             headers:
+#               Access-Control-Allow-Origin:
+#                 schema:
+#                   type: string
+#                   default: "'*'"
+#             content:
+#               application/json:
+#                 schema:
+#                   $ref: '#/components/schemas/Broadcast'
+#           400:
+#             description: The edition of the broadcast failed.
+#             content:
+#               application/json:
+#                 schema:
+#                   $ref: '#/components/schemas/Error'
+#
+#   /broadcast/{slug}/{broadcastId}/push:
+#     post:
+#       operationId: broadcastPush
+#       summary: Push PGN to your broadcast
+#       description: |
+#         Update your broadcast with new PGN.
+#         Only for broadcast without a source URL.
+#       tags:
+#         - Broadcasts
+#         - OAuth
+#       security:
+#         - OAuth2: ["study:write"]
+#       parameters:
+#         - in: path
+#           name: slug
+#           description: The broadcast slug. Only used for SEO, the slug can be safely replaced by `-`. Only the `broadcastId` is actually used.
+#           required: true
+#           schema:
+#             type: string
+#             default: "-"
+#         - in: path
+#           name: broadcastId
+#           description: The broadcast ID (8 characters).
+#           required: true
+#           schema:
+#             type: string
+#       requestBody:
+#         description: The PGN. It can contain up to 64 games, separated by a double new line.
+#         required: true
+#         content:
+#           text/plain:
+#             schema:
+#               type: string
+#       responses:
+#         200:
+#           description: The broadcast was successfully updated.
+#           headers:
+#             Access-Control-Allow-Origin:
+#               schema:
+#                 type: string
+#                 default: "'*'"
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: '#/components/schemas/Ok'
+#
   /api/simul:
     get:
       operationId: apiSimul
@@ -3714,6 +4734,96 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/board/game/{gameId}/decide-select-squares/{accept}:
+    post:
+      operationId: boardGameDecideSelectSquares
+      summary: Accept or decline a select-squares request
+      description: |
+        Accept or decline a select-squares request in a game being played with the Board API.
+        This is used in variants that require selecting squares (e.g. Go dead stone selection).
+        - `yes`: Accept the select-squares proposal.
+        - `no`: Decline the select-squares proposal.
+      tags:
+        - Board
+      security:
+        - OAuth2: ["board:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: accept
+          schema:
+            type: boolean
+            example: "yes"
+          required: true
+      responses:
+        200:
+          description: The select-squares decision was successfully sent.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/board/game/{gameId}/select-squares/{squares}:
+    post:
+      operationId: boardGameSelectSquares
+      summary: Select squares in a game
+      description: |
+        Select squares in a game being played with the Board API.
+        Used in variants that require selecting squares (e.g. Go dead stone selection).
+        Pass an empty `squares` parameter to submit an empty selection.
+      tags:
+        - Board
+      security:
+        - OAuth2: ["board:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: squares
+          required: true
+          description: Comma-separated list of square keys to select (e.g. `e2,e4`). Pass empty string for no selection.
+          schema:
+            type: string
+            example: "e2,e4"
+      responses:
+        200:
+          description: The squares were successfully selected.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/bot/account/upgrade:
     post:
       operationId: botAccountUpgrade
@@ -3970,6 +5080,140 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/bot/game/{gameId}/draw/{accept}:
+    post:
+      operationId: botGameDraw
+      summary: Handle draw offers
+      description: |
+        Create/accept/decline draw offers in a game being played with the Bot API.
+        - `yes`: Offer a draw, or accept the opponent's draw offer.
+        - `no`: Decline a draw offer from the opponent.
+      tags:
+        - Bot
+      security:
+        - OAuth2: ["bot:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: accept
+          schema:
+            type: boolean
+            example: "yes"
+          required: true
+      responses:
+        200:
+          description: The draw offer was successfully sent.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: Sending the draw offer failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bot/game/{gameId}/decide-select-squares/{accept}:
+    post:
+      operationId: botGameDecideSelectSquares
+      summary: Accept or decline a select-squares request
+      description: |
+        Accept or decline a select-squares request in a game being played with the Bot API.
+        This is used in variants that require selecting squares (e.g. Go dead stone selection).
+        - `yes`: Accept the select-squares proposal.
+        - `no`: Decline the select-squares proposal.
+      tags:
+        - Bot
+      security:
+        - OAuth2: ["bot:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: accept
+          schema:
+            type: boolean
+            example: "yes"
+          required: true
+      responses:
+        200:
+          description: The select-squares decision was successfully sent.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bot/game/{gameId}/select-squares/{squares}:
+    post:
+      operationId: botGameSelectSquares
+      summary: Select squares in a game
+      description: |
+        Select squares in a game being played with the Bot API.
+        Used in variants that require selecting squares (e.g. Go dead stone selection).
+        Pass an empty `squares` parameter to submit an empty selection.
+      tags:
+        - Bot
+      security:
+        - OAuth2: ["bot:play"]
+      parameters:
+        - in: path
+          name: gameId
+          schema:
+            type: string
+            example: "5IrD6Gzz"
+          required: true
+        - in: path
+          name: squares
+          required: true
+          description: Comma-separated list of square keys to select (e.g. `e2,e4`). Pass empty string for no selection.
+          schema:
+            type: string
+            example: "e2,e4"
+      responses:
+        200:
+          description: The squares were successfully selected.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        400:
+          description: The operation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/challenge/{username}:
     post:
       operationId: challengeCreate
@@ -4068,6 +5312,17 @@ paths:
                     You can omit this field to send the default message,
                     but if you set your own message, it must at least contain the `{game}` placeholder.
                   default: "Your game with {opponent} is ready: {game}."
+                multiMatch:
+                  type: integer
+                  description: |
+                    Create a multi-match series of games.
+                    The value is the number of games in the match.
+                  minimum: 2
+                backgammonPoints:
+                  type: integer
+                  description: |
+                    Number of points to play to, for Backgammon variants.
+                  minimum: 1
       responses:
         200:
           description: The challenge was successfully created.
@@ -4318,7 +5573,7 @@ paths:
 
         Share the URL of the challenge. the first 2 players to click it will be paired for a game.
 
-        The response body also contains `p1Url` and `p2Url`.
+        The response body also contains `urlP1` and `urlP2`.
         You can control the starting player by giving players the specific URLs,
         instead of the main challenge URL.
 
@@ -4373,6 +5628,11 @@ paths:
                 name:
                   type: string
                   description: Optional name for the challenge, that players will see on the challenge page.
+                backgammonPoints:
+                  type: integer
+                  description: |
+                    Number of points to play to, for Backgammon variants.
+                  minimum: 1
       responses:
         200:
           description: The challenge was successfully created.
@@ -4975,8 +6235,8 @@ components:
       example: {
         "id": "VU0nyvsW",
         "url": "https://playstrategy.org/VU0nyvsW",
-        "urlp1": "https://playstrategy.org/VU0nyvsW?playerIndex=p1",
-        "urlp2": "https://playstrategy.org/VU0nyvsW?playerIndex=p2",
+        "urlP1": "https://playstrategy.org/VU0nyvsW?playerIndex=p1",
+        "urlP2": "https://playstrategy.org/VU0nyvsW?playerIndex=p2",
         "playerIndex": "random",
         "direction": "out",
         "timeControl": {
@@ -5093,6 +6353,7 @@ components:
         "createdAt": 1514505150384,
         "lastMoveAt": 1514505592843,
         "status": "draw",
+        "abortable": false,
         "players": {
           "white": {
             "user": {
@@ -5245,8 +6506,8 @@ components:
           $ref: '#/components/schemas/Perf'
         horde:
           $ref: '#/components/schemas/Perf'
-#         puzzle:
-#           $ref: '#/components/schemas/Perf'
+        puzzle:
+          $ref: '#/components/schemas/Perf'
         classical:
           $ref: '#/components/schemas/Perf'
         rapid:
@@ -5431,98 +6692,98 @@ components:
           }
         }
 
-#     PuzzleJson:
-#       example: {
-#         "game": {
-#             "clock": "10+0",
-#             "id": "VpVdGbna",
-#             "perf": {
-#                 "icon": "#",
-#                 "name": "Rapid"
-#             },
-#             "pgn": "d4 Nf6 Nf3 g6 Nc3 d6 e4 c5 Be3 cxd4 Bxd4 Nc6 Be3 Qa5 Bd2 Bg7 Be2 O-O O-O Qb6 Rb1 Bg4 h3 Bxf3 Bxf3 Nd4 Be3 Nxf3+ Qxf3 Qc6 Bd4 a6 Bxf6 Bxf6 Nd5 Qxc2 Nxf6+ exf6 Qxf6 Qxe4 Qxd6 Rad8 Qb6 Rfe8 Rfe1 Qxe1+ Rxe1 Rxe1+ Kh2 Rd2 Kg3 Ree2 Qxb7 Rxb2 Qxa6 Rxa2 Qc8+ Kg7 Qc3+ Kg8 Qc5 Rxf2 Qc8+ Kg7 Qc3+ Kh6 Qe3+ Kg7 Qe5+ Kf8 Qh8+ Ke7 Qe5+ Kf8 Qb8+ Kg7 Qe5+ f6 Qe7+ Kh6 Qf8+ Kg5 h4+ Kh5 Qc5+ f5 Qc1 Rxg2+ Kh3 Rh2+ Kg3 Rag2+ Kf3 Rg4 Qd1 Rhxh4 Kf2 Rh2+ Kf3 Rh3+ Ke2 Rg2+ Kf1+ Rg4 Kf2 g5 Qd8 h6 Qe8+ Kh4 Kf1 h5 Qe1+ Rhg3 Qe5 f4 Qe1 f3 Kf2 Rf4 Qh1+ Rh3 Qe1 g4",
-#             "players": [
-#                 {
-#                     "color": "white",
-#                     "name": "borska (2013)",
-#                     "userId": "borska"
-#                 },
-#                 {
-#                     "color": "black",
-#                     "name": "Xxn00bkillar69xX (1990)",
-#                     "userId": "xxn00bkillar69xx"
-#                 }
-#             ],
-#             "rated": true
-#         },
-#         "puzzle": {
-#             "id": "K69di",
-#             "initialPly": 123,
-#             "plays": 1970,
-#             "rating": 2022,
-#             "solution": [
-#                 "e1e7",
-#                 "f4f6",
-#                 "e7f6"
-#             ],
-#             "themes": [
-#                 "short",
-#                 "queenRookEndgame",
-#                 "endgame",
-#                 "mateIn2"
-#             ]
-#         },
-#     }
+    PuzzleJson:
+      example: {
+        "game": {
+            "clock": "10+0",
+            "id": "VpVdGbna",
+            "perf": {
+                "icon": "#",
+                "name": "Rapid"
+            },
+            "pgn": "d4 Nf6 Nf3 g6 Nc3 d6 e4 c5 Be3 cxd4 Bxd4 Nc6 Be3 Qa5 Bd2 Bg7 Be2 O-O O-O Qb6 Rb1 Bg4 h3 Bxf3 Bxf3 Nd4 Be3 Nxf3+ Qxf3 Qc6 Bd4 a6 Bxf6 Bxf6 Nd5 Qxc2 Nxf6+ exf6 Qxf6 Qxe4 Qxd6 Rad8 Qb6 Rfe8 Rfe1 Qxe1+ Rxe1 Rxe1+ Kh2 Rd2 Kg3 Ree2 Qxb7 Rxb2 Qxa6 Rxa2 Qc8+ Kg7 Qc3+ Kg8 Qc5 Rxf2 Qc8+ Kg7 Qc3+ Kh6 Qe3+ Kg7 Qe5+ Kf8 Qh8+ Ke7 Qe5+ Kf8 Qb8+ Kg7 Qe5+ f6 Qe7+ Kh6 Qf8+ Kg5 h4+ Kh5 Qc5+ f5 Qc1 Rxg2+ Kh3 Rh2+ Kg3 Rag2+ Kf3 Rg4 Qd1 Rhxh4 Kf2 Rh2+ Kf3 Rh3+ Ke2 Rg2+ Kf1+ Rg4 Kf2 g5 Qd8 h6 Qe8+ Kh4 Kf1 h5 Qe1+ Rhg3 Qe5 f4 Qe1 f3 Kf2 Rf4 Qh1+ Rh3 Qe1 g4",
+            "players": [
+                {
+                    "color": "white",
+                    "name": "borska (2013)",
+                    "userId": "borska"
+                },
+                {
+                    "color": "black",
+                    "name": "Xxn00bkillar69xX (1990)",
+                    "userId": "xxn00bkillar69xx"
+                }
+            ],
+            "rated": true
+        },
+        "puzzle": {
+            "id": "K69di",
+            "initialPly": 123,
+            "plays": 1970,
+            "rating": 2022,
+            "solution": [
+                "e1e7",
+                "f4f6",
+                "e7f6"
+            ],
+            "themes": [
+                "short",
+                "queenRookEndgame",
+                "endgame",
+                "mateIn2"
+            ]
+        },
+    }
 
-#     PuzzleRoundJson:
-#       type: object
-#       properties:
-#         id:
-#           type: string
-#           example: "BwPiW"
-#         date:
-#           type: number
-#           example: 1514505150384
-#         win:
-#           type: boolean
-#           example: true
-#         puzzleRating:
-#           type: number
-#           example: 1877
+    PuzzleRoundJson:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "BwPiW"
+        date:
+          type: number
+          example: 1514505150384
+        win:
+          type: boolean
+          example: true
+        puzzleRating:
+          type: number
+          example: 1877
 
-#     PuzzleDashboardJson:
-#       example: {
-#         "days": 30,
-#         "global": {
-#           "firstWins": 276,
-#           "nb": 501,
-#           "performance": 1570,
-#           "puzzleRatingAvg": 1523,
-#           "replayWins": 2
-#         },
-#         "themes": {
-#           "advancedPawn": {
-#             "results": {
-#               "firstWins": 19,
-#               "nb": 39,
-#               "performance": 1438,
-#               "puzzleRatingAvg": 1476,
-#               "replayWins": 1
-#             },
-#             "theme": "Advanced pawn"
-#           },
-#           "anastasiaMate": {
-#             "results": {
-#               "firstWins": 5,
-#               "nb": 6,
-#               "performance": 1720,
-#               "puzzleRatingAvg": 1387,
-#               "replayWins": 0
-#             },
-#             "theme": "Anastasia's mate"
-#           }
-#         }
-#       }
+    PuzzleDashboardJson:
+      example: {
+        "days": 30,
+        "global": {
+          "firstWins": 276,
+          "nb": 501,
+          "performance": 1570,
+          "puzzleRatingAvg": 1523,
+          "replayWins": 2
+        },
+        "themes": {
+          "advancedPawn": {
+            "results": {
+              "firstWins": 19,
+              "nb": 39,
+              "performance": 1438,
+              "puzzleRatingAvg": 1476,
+              "replayWins": 1
+            },
+            "theme": "Advanced pawn"
+          },
+          "anastasiaMate": {
+            "results": {
+              "firstWins": 5,
+              "nb": 6,
+              "performance": 1720,
+              "puzzleRatingAvg": 1387,
+              "replayWins": 0
+            },
+            "theme": "Anastasia's mate"
+          }
+        }
+      }
 
 #     StormDashboardJson:
 #       example: {
@@ -6035,7 +7296,7 @@ components:
         "round": 0,
         "startsAt": "2020-05-11T12:23:18.233-06:00",
         "status": "created",
-        "variant": "standard"
+        "variant": "0_1"
       }
 
     Simul:
@@ -6250,6 +7511,9 @@ components:
             winner:
               type: string
               description: PlayerIndex of the winner, if any
+            abortable:
+              type: boolean
+              description: Whether the game can be aborted
       example: [
         {
           "type": "gameFull",
@@ -6290,7 +7554,8 @@ components:
             "btime": 8395220,
             "winc": 10000,
             "binc": 10000,
-            "status": "started"
+            "status": "started",
+            "abortable": true
           }
         },
         {
@@ -6300,7 +7565,8 @@ components:
           "btime": 8395220,
           "winc": 10000,
           "binc": 10000,
-          "status": "started"
+          "status": "started",
+          "abortable": false
         },
         {
           "type": "chatLine",
@@ -6322,7 +7588,8 @@ components:
           "winc": 10000,
           "binc": 10000,
           "status": "resign",
-          "winner": "black"
+          "winner": "black",
+          "abortable": false
         }
       ]
 
@@ -6385,7 +7652,7 @@ components:
             "study:read": Read private studies and broadcasts
             "study:write": Create, update, delete studies and broadcasts
             "tournament:write": Create tournaments
-#             "puzzle:read": Read puzzle activity
+            "puzzle:read": Read puzzle activity
             "team:write": Join, leave, and manage teams
             "msg:write": Send private messages to other players
             "board:play": Play with the Board API
