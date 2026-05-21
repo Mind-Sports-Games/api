@@ -4824,6 +4824,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/bot/online:
+    get:
+      operationId: botOnlineApi
+      summary: Get online bots
+      description: |
+        Stream the [online bot users](https://playstrategy.org/player/bots), as ndjson.
+      tags:
+        - Bot
+      security: []
+      parameters:
+        - in: query
+          name: nb
+          description: Max number of bots to fetch
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        200:
+          description: The list of online bots.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: "'*'"
+          content:
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/User'
+              example: |
+                {"id":"ps-greedy-four-move","username":"PS-Greedy-Four-Move","online":true,"perfs":{"blitz":{"games":0,"rating":1500,"rd":500,"prog":0,"prov":true},"bestemshe":{"games":613,"rating":1447,"rd":64,"prog":-9},"frysk":{"games":216,"rating":1314,"rd":66,"prog":-33},"english":{"games":378,"rating":1594,"rd":121,"prog":9,"prov":true},"russian":{"games":395,"rating":1323,"rd":51,"prog":-20},"brazilian":{"games":483,"rating":1354,"rd":80,"prog":48},"international":{"games":664,"rating":1792,"rd":85,"prog":12},"pool":{"games":87,"rating":1548,"rd":173,"prog":-152,"prov":true},"breakthrough":{"games":36,"rating":1599,"rd":168,"prog":54,"prov":true},"frisian":{"games":47,"rating":1746,"rd":139,"prog":4,"prov":true},"oware":{"games":4614,"rating":1430,"rd":45,"prog":-14},"portuguese":{"games":98,"rating":1460,"rd":123,"prog":-93,"prov":true},"togyzkumalak":{"games":334,"rating":1672,"rd":64,"prog":35},"antidraughts":{"games":171,"rating":1611,"rd":102,"prog":177},"bullet":{"games":0,"rating":1500,"rd":500,"prog":0,"prov":true},"correspondence":{"games":0,"rating":1500,"rd":500,"prog":0,"prov":true},"classical":{"games":0,"rating":1500,"rd":500,"prog":0,"prov":true},"rapid":{"games":0,"rating":1500,"rd":500,"prog":0,"prov":true}},"createdAt":1670937719219,"profile":{"bio":"PS-Greedy-Four-Move is another PlayStrategy AI, accepting casual and rated games with a time control of 3+2 or greater (must include increment). It currently only accepts games for oware, togyzkumalak and draughts."},"seenAt":1779378773597,"playTime":{"total":5669809,"tv":2121504},"language":"en-GB","title":"BOT"}
+
   /api/bot/account/upgrade:
     post:
       operationId: botAccountUpgrade
